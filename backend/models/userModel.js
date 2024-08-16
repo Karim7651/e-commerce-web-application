@@ -1,0 +1,104 @@
+import { mongoose } from "mongoose";
+import crypto from "crypto";
+import validator from "validator";
+import bcrypt from "bcrypt";
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "Please enter your name"],
+  },
+  email: {
+    type: String,
+    required: [true, "Please enter your email"],
+    unique: true,
+    lowercase: true,
+    validate: [validator.isEmail, "Please provide a valid email"],
+  },
+  address: {
+    type: String,
+    required: [true, "Please provide an address"],
+    select: false,
+  },
+  mobileNumber: {
+    type: String,
+    required: [true, "Please provide a phone number"],
+    select: false,
+    validate: [validator.isMobilePhone, "Please provide a valid mobile number"],
+  },
+  role: {
+    type: String,
+    enum: ["customer", "seller", "admin"],
+    default: "customer",
+  },
+  password: {
+    type: String,
+    required: [true, "Please provide your password"],
+    minlength: 8,
+    required: true,
+    select: false,
+  },
+  passwordConfirm: {
+    type: String,
+    required: [true, "Please confirm your password"],
+    validate: {
+      //this works on create and save only
+      validator: function (confrimPassword) {
+        return confrimPassword === this.password;
+      },
+      message: "Passwords do not match",
+    },
+  },
+  //customer : cart
+  //1 : 1
+  cartId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Cart",
+  },
+  //seller : products
+  //1      : few
+  productsSold: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Product",
+    },
+  ],
+  //customer : orders
+  //1        : m(few)
+  orderHistory: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Order",
+    },
+  ],
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
+});
+
+userSchema.pre("save", async function (next) {
+  //only run this if password was modified
+  if (!this.isModified("password")) return next();
+  //number of rounds
+  //don't block event loop (use async version)
+  this.password = await bcrypt.hash(this.password, 12);
+  //it is required input but not required in db, we just use required as backend validation
+  this.passwordConfirm = undefined;
+  next();
+});
+
+//instance method to confirm if login password is same as stored(encrypted) password
+userSchema.methods.isCorrectPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  //this points at current document
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+const User = mongoose.model("User", userSchema);
+export default User;

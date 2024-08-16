@@ -1,0 +1,68 @@
+import express from "express";
+import morgan from "morgan";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
+import xss from "xss-clean";
+import hpp from "hpp";
+import path from "path";
+import { fileURLToPath } from "url";
+
+import globalErrorHandler from "./controllers/errorController.js";
+import AppError from "./utils/appError.js";
+import userRouter from "./routes/userRoutes.js";
+const app = express();
+//1) global middlewares
+
+//Set security http headers
+app.use(helmet());
+
+//Development logging
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
+//rate limiting
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000, //1 hour
+  message: "Too many requests, please try again in an hour",
+});
+app.use(limiter);
+//body parser reads data from body into req.body, limit request body size
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true }));
+
+//Server static files
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(`${__dirname}/public`));
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS(cross site scripting attacks)
+app.use(xss());
+
+// Prevent parameter pollution
+//remove duplicate fields
+app.use(
+  hpp({
+    //properties allowed to have duplicate fields in queryString
+    whitelist: [
+      "duration",
+      "ratingsQuantity",
+      "ratingsAverage",
+      "maxGroupSize",
+      "difficulty",
+      "price",
+    ],
+  })
+);
+
+app.use("/api/v1/users", userRouter);
+
+app.all("*", (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+app.use(globalErrorHandler);
+export default app;
