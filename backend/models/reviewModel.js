@@ -15,6 +15,7 @@ const reviewSchema = new mongoose.Scehma(
     createdAt: {
       type: Date,
       default: Date.now,
+      select:false,
     },
     product: {
       type: mongoose.Schema.ObjectId,

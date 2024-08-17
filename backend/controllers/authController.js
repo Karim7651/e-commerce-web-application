@@ -1,8 +1,10 @@
 import catchAsync from "../utils/catchAsync.js";
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import { promisify } from "util";
 import bcrypt from "bcrypt";
 import AppError from "../utils/appError.js";
+import APIFeatures from "../utils/apiFeatures.js";
 
 const signToken = (id) => {
   //payload is user id
@@ -18,14 +20,13 @@ const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 //  day in ms * 90 in env
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 1 //  day in ms * 90 in env
     ),
     //secure : true // we need https to use this
     httpOnly: true, // can't be modified by browser
   };
 
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
-  console.log(token)
   res.cookie("jwt", token, cookieOptions);
 
   // Remove password from output
@@ -40,7 +41,6 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 export const signup = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   //only take fields that are required
   //never take role field -> security flaw otherwise
   const newUser = await User.create({
@@ -73,4 +73,44 @@ export const login = catchAsync(async (req, res, next) => {
     status: "success",
     token,
   });
+});
+export const protect = catchAsync(async (req, res, next) => {
+  //get token and check if its there
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1]; //Bearer tokenHere
+  }
+  if (!token) {
+    //401 unauthroized
+    return next(
+      new AppError("You are not logged in! Please log in to get access", 401)
+    );
+  }
+  //verify token
+  //decoded payload(userID here)
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  //check if user still exists
+  const freshUser = await User.findById(decoded.id);
+  //what if someone altered payload of the token (fake user id)
+  if (!freshUser) {
+    return next(
+      new AppError(
+        "The token belonging to this user doesn't exist anymore",
+        401
+      )
+    );
+  }
+  //check if user changed password after the token was issued
+  if (freshUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError("User recently changed password ! Please log in again", 401)
+    );
+  }
+  req.user = freshUser;
+  //grant access to protected routes
+  next();
 });

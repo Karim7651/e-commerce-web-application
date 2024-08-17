@@ -37,6 +37,11 @@ const userSchema = new mongoose.Schema({
     required: true,
     select: false,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    select: false,
+  },
   passwordConfirm: {
     type: String,
     required: [true, "Please confirm your password"],
@@ -70,7 +75,7 @@ const userSchema = new mongoose.Schema({
       ref: "Order",
     },
   ],
-  passwordChangedAt: Date,
+  passwordChangedAt:  Date ,
   passwordResetToken: String,
   passwordResetExpires: Date,
   active: {
@@ -99,6 +104,18 @@ userSchema.methods.isCorrectPassword = async function (
   //this points at current document
   return await bcrypt.compare(candidatePassword, userPassword);
 };
-
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  //if user changed his password before
+  if (this.passwordChangedAt) {
+    const changedTimeStamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    ); //convert to format, base 10
+    //password changed after jwt changed don't authorize
+    return JWTTimestamp < changedTimeStamp;
+  }
+  //password didn't change
+  return false;
+};
 const User = mongoose.model("User", userSchema);
 export default User;

@@ -52,9 +52,9 @@ const productSchema = new mongoose.Schema(
       required: [true, "A product must have a cover image"],
     },
     images: [String],
-    addedAt: {
+    createdAt: {
       type: Date,
-      default: Date.now(),
+      default: Date.now,
       select: false,
     },
   },
