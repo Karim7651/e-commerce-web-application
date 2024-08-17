@@ -11,6 +11,7 @@ import { fileURLToPath } from "url";
 import globalErrorHandler from "./controllers/errorController.js";
 import AppError from "./utils/appError.js";
 import userRouter from "./routes/userRoutes.js";
+import productRouter from "./routes/productRoutes.js";
 const app = express();
 //1) global middlewares
 
@@ -36,6 +37,10 @@ app.use(express.urlencoded({ extended: true }));
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.static(`${__dirname}/public`));
+//serving images
+//http://localhost:8000/products/user-1723933583456-cover.jpeg
+app.use('/products', express.static(path.join(__dirname, 'public', 'img', 'products')));
+
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -58,9 +63,8 @@ app.use(
     ],
   })
 );
-
 app.use("/api/v1/users", userRouter);
-
+app.use("/api/v1/products", productRouter);
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });

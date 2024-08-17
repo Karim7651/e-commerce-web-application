@@ -1,0 +1,70 @@
+import { createOne,getAll } from "./handlerFactory.js";
+import Product from "../models/productModel.js";
+import multer from "multer";
+import sharp from "sharp";
+import AppError from "../utils/appError.js";
+import catchAsync from "../utils/catchAsync.js";
+
+
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "public/img/productsMain"); //cb => next
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split("/")[1];
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   },
+// });
+
+//first parameter of cb is error
+const multerStorage = multer.memoryStorage();
+const multerFilter = (req, file, cb) => {
+  //only allow image files
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    //400 bad request
+    cb(new AppError("Not an image ! Please upload only images.", 400), false);
+  }
+};
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+export const resizeProductImages = catchAsync(async (req, res, next) => {
+  console.log(req.body)
+  if (!req.files.imageCover || !req.files.images) {
+    return next(new AppError("A product must have a cover image and at least one descriptive image",400));
+  }
+  //1) cover image
+  const imageCoverFileName = `user-${Date.now()}-cover.jpeg`;
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(1000, 1000)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/products/${imageCoverFileName}`);
+  //make sure handlerFactory includes this image and also next routeHandler
+  req.body.imageCover = imageCoverFileName;
+  //2) images
+  req.body.images = [];
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const fileName = `user-${Date.now()}-${i + 1}.jpeg`;
+
+      await sharp(file.buffer)
+        .resize(1000, 1000)
+        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/products/${fileName}`);
+      //make sure handlerFactory includes this image and also next routeHandler
+      req.body.images.push(fileName);
+    })
+  );
+  next();
+});
+export const uploadProductImages = upload.fields([
+  { name: "imageCover", maxCount: 1 },
+  { name: "images", maxCount: 3 },
+]);
+export const createProduct = createOne(Product)
+export const getAllProducts = getAll(Product)

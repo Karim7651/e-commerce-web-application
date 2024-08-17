@@ -9,7 +9,7 @@ const handleCastErrorDB = (err) => {
 const handleDuplicateFieldsDB = (err) => {
   //matches text between quotes
   const value = err.message.match(/(["'])(\\?.)*?\1/)[0];
-  console.log(value);
+  // console.log(value);
 
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
@@ -70,11 +70,11 @@ function globalErrorHandler(err, req, res, next) {
     //don't override error
     let error = { ...err };
     error.message = err.message;
-
     if (error.name === "CastError") error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === "ValidationError")
       error = handleValidationErrorDB(error);
+    if(error._message === "User validation failed") error = handleValidationErrorDB(error)
     if (error.name === "JsonWebTokenError") error = handleJWTError();
     if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
     sendErrorProd(error, res);

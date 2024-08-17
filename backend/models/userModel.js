@@ -55,9 +55,10 @@ const userSchema = new mongoose.Schema({
   },
   //customer : cart
   //1 : 1
-  cartId: {
+  cart: {
     type: mongoose.Schema.ObjectId,
     ref: "Cart",
+    unique: true,
   },
   //seller : products
   //1      : few
@@ -75,7 +76,7 @@ const userSchema = new mongoose.Schema({
       ref: "Order",
     },
   ],
-  passwordChangedAt:  Date ,
+  passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
   active: {
@@ -84,7 +85,14 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 });
-
+// Middleware to populate the cart field for find queries
+userSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "cart",
+    select: "products", // Customize fields as needed
+  });
+  next();
+});
 userSchema.pre("save", async function (next) {
   //only run this if password was modified
   if (!this.isModified("password")) return next();

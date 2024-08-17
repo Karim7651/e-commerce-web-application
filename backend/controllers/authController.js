@@ -1,5 +1,6 @@
 import catchAsync from "../utils/catchAsync.js";
 import User from "../models/userModel.js";
+import Cart from '../models/cartModel.js'
 import jwt from "jsonwebtoken";
 import { promisify } from "util";
 import bcrypt from "bcrypt";
@@ -20,7 +21,7 @@ const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 1 //  day in ms * 90 in env
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 //  day in ms * 90 in env
     ),
     //secure : true // we need https to use this
     httpOnly: true, // can't be modified by browser
@@ -29,8 +30,8 @@ const createSendToken = (user, statusCode, res) => {
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
   res.cookie("jwt", token, cookieOptions);
 
-  // Remove password from output
-  //user.password = undefined;
+  //Remove password from output
+  user.password = undefined;
 
   res.status(statusCode).json({
     status: "success",
@@ -41,6 +42,9 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 export const signup = catchAsync(async (req, res, next) => {
+
+  
+  const newCart = await Cart.create({})
   //only take fields that are required
   //never take role field -> security flaw otherwise
   const newUser = await User.create({
@@ -50,6 +54,7 @@ export const signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     mobileNumber: req.body.mobileNumber,
     address: req.body.address,
+    cart:newCart,
   });
   createSendToken(newUser, 201, res);
 });
@@ -67,13 +72,11 @@ export const login = catchAsync(async (req, res, next) => {
     //make it vague don't specify which one is wrong
     return next(new AppError("Incorrect email or password", 401));
   }
-  //3) if everything is okay send token to client
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: "success",
-    token,
-  });
+  // 3) If everything is okay, send token to client
+
+  createSendToken(user, 200, res);
 });
+//check if logged in
 export const protect = catchAsync(async (req, res, next) => {
   //get token and check if its there
   let token;
@@ -114,3 +117,18 @@ export const protect = catchAsync(async (req, res, next) => {
   //grant access to protected routes
   next();
 });
+//authorization
+export const restrictTo = (...roles) => {
+  //roles is an array ['admin','seller']
+  return (req, res, next) => {
+    //1)run protect middleware => now we have user on req.user
+    //2)check if user role is in the array of allowed roles
+    if (!roles.includes(req.user.role)) {
+      //403 forbidden
+      return next(
+        new AppError("You do not have permission to perform this action", 403)
+      );
+    }
+    next();
+  };
+};
