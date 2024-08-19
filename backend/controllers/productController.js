@@ -4,7 +4,7 @@ import multer from "multer";
 import sharp from "sharp";
 import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
-
+import APIFeatures from "../utils/apiFeatures.js";
 
 // const multerStorage = multer.diskStorage({
 //   destination: (req, file, cb) => {
@@ -76,6 +76,22 @@ export const uploadProductImages = upload.fields([
 ]);
 export const createProduct = createOne(Product)
 // won't populate review here that would be too much info
-export const getAllProducts = getAll(Product) 
+export const getAllProductsUser = catchAsync(async(req,res) =>{
+  let query = Product.find({ isHidden: false, isApproved: true });
+  const features = new APIFeatures(query, req.query)
+  .filter()
+  .sort()
+  .limitFields()
+  .paginate();
+  const products = await features.query;
+  res.status(200).json({
+    status: "success",
+    results: products.length,
+    data: {
+      data: products,
+    },
+  });
+})
+
 //populate with virtual populate fields reviews
 export const getProduct = getOne(Product,{path : 'reviews'})

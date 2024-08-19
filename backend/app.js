@@ -14,6 +14,7 @@ import AppError from "./utils/appError.js";
 import userRouter from "./routes/userRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 import reviewRouter from "./routes/reviewRoutes.js";
+import adminRouter from "./routes/adminRoutes.js"
 const app = express();
 //1) global middlewares
 
@@ -69,7 +70,8 @@ app.use(
 );
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRouter);
-// app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/admin",adminRouter)
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });

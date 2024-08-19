@@ -63,7 +63,6 @@ const userSchema = new mongoose.Schema({
   cart: {
     type: mongoose.Schema.ObjectId,
     ref: "Cart",
-    unique: true,
   },
   //seller : products
   //1      : few

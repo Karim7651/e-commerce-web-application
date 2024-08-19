@@ -75,6 +75,16 @@ const productSchema = new mongoose.Schema(
     size: {
       type: String,
     },
+    isApproved:{
+      type : Boolean,
+      default : false,
+      select:false,
+    },
+    isHidden:{
+      type:Boolean,
+      default:false,
+      select:false,
+    }
   },
 
   {

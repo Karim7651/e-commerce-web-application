@@ -6,7 +6,7 @@ import {
   resizeProductImages,
   uploadProductImages,
   createProduct,
-  getAllProducts,
+  getAllProductsUser,
   getProduct,
 } from "../controllers/productController.js";
 import { createReview } from "../controllers/reviewController.js";
@@ -17,7 +17,7 @@ router.use("/:productId/reviews", reviewRouter);
 // router.use(restrictTo("admin", "seller"));
 router
   .route("/")
-  .get(getAllProducts)
+  .get(getAllProductsUser)
   .post(
     protect,
     restrictTo("admin", "seller"),
