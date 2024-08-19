@@ -1,21 +1,21 @@
 import { mongoose } from "mongoose";
-import {Product} from './productModel'
-const reviewSchema = new mongoose.Scehma(
+import Product from "./productModel.js";
+const reviewSchema = new mongoose.Schema(
   {
     review: {
       type: String,
-      required: [true, "Review can not be empty"],
+      trim: true,
     },
     rating: {
       type: Number,
       min: 1,
-      max5,
+      max: 5,
       required: [true, "Rating is required"],
     },
     createdAt: {
       type: Date,
       default: Date.now,
-      select:false,
+      select: false,
     },
     product: {
       type: mongoose.Schema.ObjectId,
@@ -41,11 +41,16 @@ reviewSchema.pre("/^find/", function (next) {
   this.populate({
     path: "user",
     select: "name",
+  }).populate({
+    path: "product",
+    select: "name imageCover",
   });
   next();
 });
 
 reviewSchema.statics.calcAverageRatings = async function (productId) {
+  //this in static method points to the model
+
   const stats = await this.aggregate([
     {
       $match: { product: productId },
@@ -58,7 +63,6 @@ reviewSchema.statics.calcAverageRatings = async function (productId) {
       },
     },
   ]);
-  // console.log(stats);
 
   if (stats.length > 0) {
     await Product.findByIdAndUpdate(productId, {
@@ -68,26 +72,32 @@ reviewSchema.statics.calcAverageRatings = async function (productId) {
   } else {
     await Product.findByIdAndUpdate(productId, {
       ratingsQuantity: 0,
+      //default when there's no reviews
       ratingsAverage: 4.5,
     });
   }
 };
-
-reviewSchema.post("save", function () {
-  this.constructor.calcAverageRatings(this.product);
-});
-
+//query middleware
 // findByIdAndUpdate
 // findByIdAndDelete
 reviewSchema.pre(/^findOneAnd/, async function (next) {
-  this.r = await this.findOne();
-  // console.log(this.r);
+  //in pre middlewares this referes to query object
+  //used this.r to pass data from pre middleware to post middleware
+  this.r = await this.model.findOne(this.getFilter()); 
   next();
 });
 
 reviewSchema.post(/^findOneAnd/, async function () {
   // await this.findOne(); does NOT work here, query has already executed
   await this.r.constructor.calcAverageRatings(this.r.product);
+});
+
+//post because current review isn't in collection yet we'd have to wait until it is saved
+//post middlewares don't have next() => makes sense
+reviewSchema.post("save", function () {
+  //this point to document
+  //this.constructor = model
+  this.constructor.calcAverageRatings(this.product);
 });
 
 const Review = mongoose.model("Review", reviewSchema);

@@ -1,4 +1,4 @@
-import { createOne,getAll } from "./handlerFactory.js";
+import { createOne,getAll,getOne } from "./handlerFactory.js";
 import Product from "../models/productModel.js";
 import multer from "multer";
 import sharp from "sharp";
@@ -32,12 +32,20 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 export const resizeProductImages = catchAsync(async (req, res, next) => {
-  console.log(req.body)
+  const name = req.body.name
+  console.log(name)
+  if(!name){
+    return next(new AppError("A product must have title",400));
+  }
+  const product = await Product.findOne({name})
+  if(product){
+    return next(new AppError("Product with this title already exists",400))
+  }
   if (!req.files.imageCover || !req.files.images) {
     return next(new AppError("A product must have a cover image and at least one descriptive image",400));
   }
   //1) cover image
-  const imageCoverFileName = `user-${Date.now()}-cover.jpeg`;
+  const imageCoverFileName = `user-${req.user.id}-${Date.now()}-cover.jpeg`;
   await sharp(req.files.imageCover[0].buffer)
     .resize(1000, 1000)
     .toFormat("jpeg")
@@ -49,7 +57,7 @@ export const resizeProductImages = catchAsync(async (req, res, next) => {
   req.body.images = [];
   await Promise.all(
     req.files.images.map(async (file, i) => {
-      const fileName = `user-${Date.now()}-${i + 1}.jpeg`;
+      const fileName = `user-${req.user.id}-${Date.now()}-${i + 1}.jpeg`;
 
       await sharp(file.buffer)
         .resize(1000, 1000)
@@ -67,4 +75,7 @@ export const uploadProductImages = upload.fields([
   { name: "images", maxCount: 3 },
 ]);
 export const createProduct = createOne(Product)
-export const getAllProducts = getAll(Product)
+// won't populate review here that would be too much info
+export const getAllProducts = getAll(Product) 
+//populate with virtual populate fields reviews
+export const getProduct = getOne(Product,{path : 'reviews'})

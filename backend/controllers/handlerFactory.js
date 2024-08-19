@@ -2,6 +2,7 @@ import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
 import APIFeatures from "../utils/apiFeatures.js";
 import User from "../models/userModel.js";
+import Product from "../models/productModel.js";
 export const deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
@@ -22,11 +23,10 @@ export const updateOne = (Model) =>
       new: true,
       runValidators: true,
     });
-
+    
     if (!doc) {
       return next(new AppError("No document found with that ID", 404));
     }
-
     res.status(200).json({
       status: "success",
       data: {
@@ -38,7 +38,13 @@ export const updateOne = (Model) =>
 export const createOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
-
+    //add product to productsSold in userModel
+    if (Model === Product) {
+      const id = req.user._id;
+      const user = await User.findByIdAndUpdate(id, {
+        $push: { productsSold: doc._id },
+      });
+    }
     res.status(201).json({
       status: "success",
       data: {
@@ -50,6 +56,7 @@ export const createOne = (Model) =>
 export const getOne = (Model, popOptions) =>
   catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
+    //chain populate options if available (products(reviews))
     if (popOptions) query = query.populate(popOptions);
     const doc = await query;
 
@@ -67,9 +74,9 @@ export const getOne = (Model, popOptions) =>
 
 export const getAll = (Model) =>
   catchAsync(async (req, res, next) => {
-    // To allow for nested GET reviews on tour (hack)
+    // allowe nested GET reviews on product
     let filter = {};
-    // if (req.params.tourId) filter = { tour: req.params.tourId };
+    if (req.params.productId) filter = { tour: req.params.productId };
 
     const features = new APIFeatures(Model.find(filter), req.query)
       .filter()

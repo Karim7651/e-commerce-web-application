@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, "Rating must be above 1.0"],
       max: [5, "Rating must be below 5.0"],
+      //setter function would run everytime this field is set
       set: (val) => Math.round(val * 10) / 10, // 4.666666, 46.6666, 47, 4.7
     },
     ratingsQuantity: {
@@ -63,7 +64,19 @@ const productSchema = new mongoose.Schema(
       default: Date.now,
       select: false,
     },
+    stock: {
+      type: Number,
+      required: [true, "A product must have a stock"],
+    },
+    color: {
+      type: String,
+      required: [true, "A product must have a color"],
+    },
+    size: {
+      type: String,
+    },
   },
+
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
@@ -71,24 +84,16 @@ const productSchema = new mongoose.Schema(
 );
 productSchema.index({ price: 1, ratingsAverage: -1 });
 productSchema.index({ slug: 1 });
+//virtual populate
 productSchema.virtual("reviews", {
   ref: "Review",
-  foreignField: "product",
-  localField: "_id",
+  foreignField: "product", //product in reviewsModel.js
+  localField: "_id", //field reference in other model
 });
 productSchema.virtual("finalPrice").get(function () {
   return this.price - (this.priceDiscount || 0);
 });
-// // Virtual for appending the full URL to imageCover
-// productSchema.virtual("imageCoverURL").get(function () {
-//   console.log(this.imageCover)
-//   return `http://localhost:8000/productsMain/${this.imageCover}`;
-// });
 
-// // Virtual for appending the full URLs to images
-// productSchema.virtual("imagesURLs").get(function () {
-//   return this.images.map((image) => `http://localhost:8000/productsSub/${image}`);
-// });
 productSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   //append static url to imageName

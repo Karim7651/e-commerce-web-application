@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please enter your name"],
+    trim: true,
   },
   email: {
     type: String,
@@ -13,17 +14,20 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     validate: [validator.isEmail, "Please provide a valid email"],
+    trim: true,
   },
   address: {
     type: String,
     required: [true, "Please provide an address"],
     select: false,
+    trim: true,
   },
   mobileNumber: {
     type: String,
     required: [true, "Please provide a phone number"],
     select: false,
     validate: [validator.isMobilePhone, "Please provide a valid mobile number"],
+    trim: true,
   },
   role: {
     type: String,
@@ -36,6 +40,7 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     required: true,
     select: false,
+    trim: true,
   },
   createdAt: {
     type: Date,
@@ -87,9 +92,18 @@ const userSchema = new mongoose.Schema({
 });
 // Middleware to populate the cart field for find queries
 userSchema.pre(/^find/, function (next) {
+  // if(this.role === 'seller'){
+  //   this.populate({
+  //     path: 'productsSold',
+  //     select: 'name description ratingsAverage price priceDiscount',
+  //   })
+  // }
   this.populate({
     path: "cart",
     select: "products", // Customize fields as needed
+  }).populate({
+    path: "productsSold",
+    select: "name description ratingsAverage price priceDiscount",
   });
   next();
 });

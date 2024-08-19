@@ -6,7 +6,7 @@ import { promisify } from "util";
 import bcrypt from "bcrypt";
 import AppError from "../utils/appError.js";
 import APIFeatures from "../utils/apiFeatures.js";
-
+import Review from "../models/reviewModel.js"
 const signToken = (id) => {
   //payload is user id
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -114,6 +114,9 @@ export const protect = catchAsync(async (req, res, next) => {
     );
   }
   req.user = freshUser;
+  if(req.user.role === "admin"){
+    req.isAdmin = true;
+  }
   //grant access to protected routes
   next();
 });
@@ -132,3 +135,22 @@ export const restrictTo = (...roles) => {
     next();
   };
 };
+export const isAuthorizedToPatchOrDeleteReview  = catchAsync(async (req, res, next) => {
+  const review = await Review.findById(req.params.id);
+  
+  if (!review) {
+    return next(new AppError("No review found with that ID", 404));
+  }
+
+  //authorize admins anyway
+  if(req.isAdmin){
+    return next()
+  }
+
+  // Check if the user ID in the review matches the logged-in user's ID
+  if (review.user.toString() !== req.user.id) {
+    return next(new AppError("You are not authorized to update this review", 403));
+  }
+
+  next();
+});
