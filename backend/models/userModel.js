@@ -2,6 +2,7 @@ import { mongoose } from "mongoose";
 import crypto from "crypto";
 import validator from "validator";
 import bcrypt from "bcrypt";
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -108,6 +109,7 @@ userSchema.pre(/^find/, function (next) {
 });
 userSchema.pre("save", async function (next) {
   //only run this if password was modified
+  //in case of new user, password is considered modified
   if (!this.isModified("password")) return next();
   //number of rounds
   //don't block event loop (use async version)
@@ -116,7 +118,14 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
-
+userSchema.pre("save", function (next) {
+  //if password is not modified or this document is new => don't do anything
+  if (!this.isModified("password") || this.isNew) return next();
+  //minus 5 sec because sometimes the token is issued a bit before the
+  //passwordChangedAt is updated which would lead to problems in our protect middleware
+  this.passwordChangedAt = Date.now() ;
+  next()
+});
 //instance method to confirm if login password is same as stored(encrypted) password
 userSchema.methods.isCorrectPassword = async function (
   candidatePassword,
@@ -137,6 +146,18 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   }
   //password didn't change
   return false;
+};
+userSchema.methods.createPasswordResetToken = function () {
+  //no strong encryption here
+  //no storing in db because that's like storing a plain text password
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  //those next two lines don't update they just modify so we need to save after
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //10 minutes windows
+  return resetToken
 };
 const User = mongoose.model("User", userSchema);
 export default User;

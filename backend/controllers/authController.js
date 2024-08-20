@@ -1,12 +1,14 @@
 import catchAsync from "../utils/catchAsync.js";
 import User from "../models/userModel.js";
-import Cart from '../models/cartModel.js'
+import Cart from "../models/cartModel.js";
 import jwt from "jsonwebtoken";
 import { promisify } from "util";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import AppError from "../utils/appError.js";
 import APIFeatures from "../utils/apiFeatures.js";
-import Review from "../models/reviewModel.js"
+import Review from "../models/reviewModel.js";
+import { sendEmail } from "../utils/email.js";
 const signToken = (id) => {
   //payload is user id
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -42,9 +44,7 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 export const signup = catchAsync(async (req, res, next) => {
-
-  
-  const newCart = await Cart.create({})
+  const newCart = await Cart.create({});
   //only take fields that are required
   //never take role field -> security flaw otherwise
   const newUser = await User.create({
@@ -54,7 +54,7 @@ export const signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     mobileNumber: req.body.mobileNumber,
     address: req.body.address,
-    cart:newCart,
+    cart: newCart,
   });
   createSendToken(newUser, 201, res);
 });
@@ -114,7 +114,7 @@ export const protect = catchAsync(async (req, res, next) => {
     );
   }
   req.user = freshUser;
-  if(req.user.role === "admin"){
+  if (req.user.role === "admin") {
     req.isAdmin = true;
   }
   //grant access to protected routes
@@ -135,22 +135,100 @@ export const restrictTo = (...roles) => {
     next();
   };
 };
-export const isAuthorizedToPatchOrDeleteReview  = catchAsync(async (req, res, next) => {
-  const review = await Review.findById(req.params.id);
-  
-  if (!review) {
-    return next(new AppError("No review found with that ID", 404));
-  }
+export const isAuthorizedToPatchOrDeleteReview = catchAsync(
+  async (req, res, next) => {
+    const review = await Review.findById(req.params.id);
 
-  //authorize admins anyway
-  if(req.isAdmin){
-    return next()
-  }
+    if (!review) {
+      return next(new AppError("No review found with that ID", 404));
+    }
 
-  // Check if the user ID in the review matches the logged-in user's ID
-  if (review.user.toString() !== req.user.id) {
-    return next(new AppError("You are not authorized to update this review", 403));
-  }
+    //authorize admins anyway
+    if (req.isAdmin) {
+      return next();
+    }
 
-  next();
+    // Check if the user ID in the review matches the logged-in user's ID
+    if (review.user.toString() !== req.user.id) {
+      return next(
+        new AppError("You are not authorized to update this review", 403)
+      );
+    }
+
+    next();
+  }
+);
+export const forgetPassword = catchAsync(async (req, res, next) => {
+  //1) get user based on email
+  const user = await User.findOne({ email: req.body.email });
+  console.log(user)
+  if (!user) {
+    return next(new AppError("There is not user with that email address", 404));
+  }
+  if(user.role ==="admin"){
+    return next(new AppError("Admins cannot reset their password", 403))
+  }
+  //2) generate the random reset token
+  const resetToken = user.createPasswordResetToken();
+  console.log(resetToken)
+  //we're only modifying passwordResetToken and passwordResetExpires, so we can't run validators
+  //save as we only modfied, but we didn't save
+  await user.save({ validateBeforeSave: false });
+  // 3) create reset url
+  const resetURL = `${req.protocol}://${req.get(
+    "host"
+  )}/api/v1/users/resetPassword/${resetToken}`;
+
+  // 4) set email options
+  const mailOptions = {
+    to: user.email,
+    subject: "Password Reset Request",
+    text: `You have requested a password reset. Please click the link below to reset your password:\n\n${resetURL}.\n If you think this happened by mistake, You can safely ignore this email`,
+    html: `
+      <h1>Password Reset Request</h1>
+      <p>You have requested a password reset. Please click the link below to reset your password, If you think this happened by mistake, You can safely ignore this email:</p>
+      <a href="${resetURL}">Reset Password</a>
+    `,
+  };
+  try {
+    await sendEmail(mailOptions);
+    res.status(200).json({
+      status: "success",
+      message: "Password reset email sent!, make sure to check spam folder",
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(
+      new AppError(
+        "There was an error sending the email. Try again later!",
+        500
+      )
+    );
+  }
+});
+export const resetPassword = catchAsync(async (req, res, next) => {
+  //1) get user based on the token
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+  //if token expired no user would be returned
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  //2) if token has not expired, and there is a user, set the new password
+  if (!user) {
+    return next(new AppError("Token is invalid or has expired", 400));
+  }
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+  //3) update changedPasswordAt property for the user => done in preSave middleware
+  //4)log the user in (send JWT)
+  createSendToken(user, 200, res);
 });

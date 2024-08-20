@@ -32,6 +32,7 @@ export const createAdmin = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { name, email, password,passwordConfirm,address,mobileNumber } = req.body;
   const role = "admin";
+  //cart is included here for E11000 duplicate key error collection: e-commerce.users index: cart_1 dup key: { cart: null }
   const cart = await Cart.create({});
   const newUser = await User.create({
     name,
