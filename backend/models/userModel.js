@@ -123,8 +123,8 @@ userSchema.pre("save", function (next) {
   if (!this.isModified("password") || this.isNew) return next();
   //minus 5 sec because sometimes the token is issued a bit before the
   //passwordChangedAt is updated which would lead to problems in our protect middleware
-  this.passwordChangedAt = Date.now() ;
-  next()
+  this.passwordChangedAt = Date.now();
+  next();
 });
 //instance method to confirm if login password is same as stored(encrypted) password
 userSchema.methods.isCorrectPassword = async function (
@@ -157,7 +157,7 @@ userSchema.methods.createPasswordResetToken = function () {
     .update(resetToken)
     .digest("hex");
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //10 minutes windows
-  return resetToken
+  return resetToken;
 };
 const User = mongoose.model("User", userSchema);
 export default User;

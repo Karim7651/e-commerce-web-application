@@ -161,16 +161,16 @@ export const isAuthorizedToPatchOrDeleteReview = catchAsync(
 export const forgetPassword = catchAsync(async (req, res, next) => {
   //1) get user based on email
   const user = await User.findOne({ email: req.body.email });
-  console.log(user)
+  console.log(user);
   if (!user) {
     return next(new AppError("There is not user with that email address", 404));
   }
-  if(user.role ==="admin"){
-    return next(new AppError("Admins cannot reset their password", 403))
+  if (user.role === "admin") {
+    return next(new AppError("Admins cannot reset their password", 403));
   }
   //2) generate the random reset token
   const resetToken = user.createPasswordResetToken();
-  console.log(resetToken)
+  console.log(resetToken);
   //we're only modifying passwordResetToken and passwordResetExpires, so we can't run validators
   //save as we only modfied, but we didn't save
   await user.save({ validateBeforeSave: false });
@@ -230,5 +230,19 @@ export const resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
   //3) update changedPasswordAt property for the user => done in preSave middleware
   //4)log the user in (send JWT)
+  createSendToken(user, 200, res);
+});
+export const updatePassword = catchAsync(async (req, res, next) => {
+  //1) get user
+  const user = await User.findById(req.user.id).select("+password");
+
+  //2) check if posted password is correct
+  if (!(await user.isCorrectPassword(req.body.passwordCurrent, user.password)))
+    return next(new AppError("Your currect password is wrong", 401));
+  //3) update password if posted password was correct
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+  //4) log user in (sent jwt)
   createSendToken(user, 200, res);
 });

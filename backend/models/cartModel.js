@@ -6,7 +6,11 @@ const cartSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
       },
-      quantity: { type: Number, required: true, default: 1 },
+      quantity: {
+        type: Number,
+        default: 1,
+        min: [1, "Quantity must be at least 1"], // Validation to ensure quantity >= 1
+      },
     },
   ],
 });
@@ -26,7 +30,7 @@ cartSchema.virtual("totalPrice").get(function () {
 cartSchema.pre(/^find/, function (next) {
   this.populate({
     path: "products.product",
-    select: "name price", // Customize fields as needed
+    select: "name price",
   });
   next();
 });

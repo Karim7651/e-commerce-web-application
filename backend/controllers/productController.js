@@ -95,3 +95,6 @@ export const getAllProductsUser = catchAsync(async(req,res) =>{
 
 //populate with virtual populate fields reviews
 export const getProduct = getOne(Product,{path : 'reviews'})
+export const updateProduct = catchAsync(async(req,res,next)=>{
+  
+})

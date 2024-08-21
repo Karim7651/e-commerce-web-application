@@ -15,6 +15,7 @@ import userRouter from "./routes/userRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 import reviewRouter from "./routes/reviewRoutes.js";
 import adminRouter from "./routes/adminRoutes.js"
+import cartRouter from "./routes/cartRoutes.js"
 const app = express();
 //1) global middlewares
 
@@ -72,6 +73,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/admin",adminRouter)
+app.use("/api/v1/cart",cartRouter)
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
