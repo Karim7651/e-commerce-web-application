@@ -11,7 +11,6 @@ import {
 
 //allow to have access to ProductId here using merge params
 const router = express.Router({ mergeParams: true });
-
 //nested routes
 //POST /product/productID/reviews
 //GET /product/productID/reviews

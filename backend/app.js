@@ -7,7 +7,7 @@ import xss from "xss-clean";
 import hpp from "hpp";
 import path from "path";
 import { fileURLToPath } from "url";
-
+import cookieParser from "cookie-parser"; 
 import globalErrorHandler from "./controllers/errorController.js";
 
 import AppError from "./utils/appError.js";
@@ -19,7 +19,7 @@ import cartRouter from "./routes/cartRoutes.js"
 const app = express();
 //1) global middlewares
 
-//Set security http headers
+//set security http headers
 app.use(helmet());
 
 //Development logging
@@ -36,6 +36,7 @@ app.use(limiter);
 //body parser reads data from body into req.body, limit request body size
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser)
 
 //Server static files
 const __filename = fileURLToPath(import.meta.url);

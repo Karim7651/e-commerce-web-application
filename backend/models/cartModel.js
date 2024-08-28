@@ -9,7 +9,7 @@ const cartSchema = new mongoose.Schema({
       quantity: {
         type: Number,
         default: 1,
-        min: [1, "Quantity must be at least 1"], // Validation to ensure quantity >= 1
+        min: [1, "Quantity must be at least 1"], 
       },
     },
   ],

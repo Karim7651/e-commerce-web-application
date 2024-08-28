@@ -3,12 +3,11 @@ import User from "../models/userModel.js";
 import Cart from "../models/cartModel.js";
 import jwt from "jsonwebtoken";
 import { promisify } from "util";
-import bcrypt from "bcrypt";
 import crypto from "crypto";
 import AppError from "../utils/appError.js";
-import APIFeatures from "../utils/apiFeatures.js";
 import Review from "../models/reviewModel.js";
 import { sendEmail } from "../utils/email.js";
+
 const signToken = (id) => {
   //payload is user id
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -85,7 +84,10 @@ export const protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1]; //Bearer tokenHere
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
+
   if (!token) {
     //401 unauthroized
     return next(
@@ -119,6 +121,43 @@ export const protect = catchAsync(async (req, res, next) => {
   }
   //grant access to protected routes
   next();
+});
+export const logout = catchAsync(async (req, res) => {
+  //overrides jwt cookie and expires in 2s
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 2 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: "success" });
+});
+export const isLoggedIn = catchAsync(async (req, res, next) => {
+  // 1) Check if there is a cookie with a JWT
+  if (!req.cookies.jwt) {
+    return res.status(401).json({ status: "fail", message: "Not logged in" });
+  }
+
+  // 2) Verify the JWT
+  const token = req.cookies.jwt;
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  // 3) Check if the user still exists
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return res.status(401).json({ status: "fail", message: "User no longer exists" });
+  }
+
+  // 4) Check if the user changed their password after the token was issued
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return res.status(401).json({ status: "fail", message: "Password changed, please log in again" });
+  }
+
+  // 5) Send response with user data
+  res.status(200).json({
+    status: "success",
+    data: {
+      user: currentUser,
+    },
+  });
 });
 //authorization
 export const restrictTo = (...roles) => {
