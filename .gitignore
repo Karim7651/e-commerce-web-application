@@ -1,4 +1,4 @@
 /backend/node_modules/
 /backend/config.env
 /frontend/node_modules/
-/frontend/e-commerce/.env*.local
+/frontend/e-commerce/.env.local
