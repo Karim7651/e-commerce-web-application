@@ -7,7 +7,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button";
-
+import Link from "next/link"
 const Pagination = ({
   className,
   ...props
@@ -39,7 +39,7 @@ const PaginationLink = ({
   size = "icon",
   ...props
 }) => (
-  <a
+  <Link
     aria-current={isActive ? "page" : undefined}
     className={cn(buttonVariants({
       variant: isActive ? "outline" : "ghost",
@@ -58,7 +58,7 @@ const PaginationPrevious = ({
     size="default"
     className={cn("gap-1 pl-2.5", className)}
     {...props}>
-    <ChevronLeftIcon className="h-4 w-4" />
+    <ChevronLeftIcon className="h-6 w-6" />
     <span>Previous</span>
   </PaginationLink>
 )
@@ -74,7 +74,7 @@ const PaginationNext = ({
     className={cn("gap-1 pr-2.5", className)}
     {...props}>
     <span>Next</span>
-    <ChevronRightIcon className="h-4 w-4" />
+    <ChevronRightIcon className="h-6 w-6" />
   </PaginationLink>
 )
 PaginationNext.displayName = "PaginationNext"
@@ -87,7 +87,7 @@ const PaginationEllipsis = ({
     aria-hidden
     className={cn("flex h-9 w-9 items-center justify-center", className)}
     {...props}>
-    <DotsHorizontalIcon className="h-4 w-4" />
+    <DotsHorizontalIcon className="h-6 w-6" />
     <span className="sr-only">More pages</span>
   </span>
 )

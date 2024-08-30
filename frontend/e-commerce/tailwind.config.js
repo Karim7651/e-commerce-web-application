@@ -12,11 +12,20 @@ module.exports = {
     container: {
       center: true,
       padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
     },
     extend: {
+      screens: {
+        xs: "300px",
+        sm: "640px",
+        md: "768px",
+        lg: "1080px",
+        xl: "1280px",
+        "2xl": "1400px",
+      },
+      fontFamily: {
+        raleway: ['"Raleway"', '"Inter"', 'sans-serif'],
+      },
+
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
