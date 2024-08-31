@@ -1,14 +1,11 @@
-import  Pagination  from "./_components/Pagination"
-import Navbar from "./_components/Navbar";
-import RatingStatic from "./_components/RatingStatic";
-import ThemeSwitch from "./_components/ThemeSwitch";
+import ProductListWithSuspense from "./_components/ProductListWithSuspense";
 import SignUpLoginTab from "./_components/SignUpLoginTab";
-import ProductCard from "./_components/ProductCard";
-import ProductList from "./_components/ProductList";
-
+import Skeleton from "./_components/Skeleton";
 
 export default function Home() {
   return (
-      <ProductList/>
+    <>
+      <SignUpLoginTab/>
+    </>
   );
 }

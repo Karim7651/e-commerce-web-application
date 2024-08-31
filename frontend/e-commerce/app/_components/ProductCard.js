@@ -17,7 +17,7 @@ function ProductCard({ product }) {
   } = product;
   return (
     <div className="card  bg-base-200 w-[15rem] shadow-xl ">
-      <figure className="h-[10rem] relative ">
+      <figure className="h-[10rem] !relative ">
         <Link href={`/products/${slug}`}>
           <Image
             src={imageCover}
@@ -29,7 +29,7 @@ function ProductCard({ product }) {
       </figure>
       <div className="card-body p-5">
         <Link href={`/products/${slug}`}>
-          <h2 className="font-bold">{name}</h2>
+          <h2 className="font-[700]">{name}</h2>
         </Link>
         <div className="mb-3">
           {price != finalPrice && (
@@ -37,7 +37,7 @@ function ProductCard({ product }) {
           )}
           {
             <span
-              className={`font-medium ${price !== finalPrice ? "ml-2" : ""} `}
+              className={`font-[500] ${price !== finalPrice ? "ml-2" : ""} `}
             >{`${finalPrice} EGP`}</span>
           }
         </div>
@@ -45,7 +45,7 @@ function ProductCard({ product }) {
           {ratingsQuantity != 0 && <RatingStatic rating={ratingsAverage} />}
           {ratingsQuantity != 0 && (
             <p className="lg:ml-3 sm:ml-2 inline-block text-sm">
-              ({ratingsAverage}) ({ratingsQuantity} Rating)
+              ({ratingsAverage}) ({ratingsQuantity === 1 ?`${ratingsQuantity} Rating`:`${ratingsQuantity} Ratings`})
             </p>
           )}
           {ratingsQuantity == 0 && <RatingStatic rating={0} />}

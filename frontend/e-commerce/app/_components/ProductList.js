@@ -1,16 +1,18 @@
 import  Pagination  from "./Pagination";
 import { getProducts } from "../_lib/Products";
 import ProductCard from "./ProductCard";
-import { unstable_noStore as noStore } from "next/cache";
-async function ProductList() {
-  noStore();
+
+
+export default async function ProductList() {
+  console.log("here")
   const products = await getProducts();
   if (!products) return null;
+  
   return (
     <>
-      <div className="grid  md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 justify-items-center justify-center items-center gap-x-10 gap-y-20 my-32  mx-auto">
+      <div className="grid  md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 justify-items-center justify-center items-start gap-x-10 gap-y-20 my-32  mx-auto ">
         {products.map((product) => (
-          <ProductCard product={product} key={"123"} />
+          <ProductCard product={product} key={product.name} />
         ))}
       </div>
       <Pagination />
@@ -18,4 +20,4 @@ async function ProductList() {
   );
 }
 
-export default ProductList;
+

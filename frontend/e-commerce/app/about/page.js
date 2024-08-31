@@ -1,8 +1,9 @@
+import Modal from "../_components/Modal"
+
+
 function about() {
     return (
-        <div>
-            about
-        </div>
+        <Modal/>
     )
 }
 

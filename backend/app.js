@@ -24,6 +24,7 @@ const app = express();
 app.use(cors());
 //allow non simple requests (patch/delete/options/uses cookies / non standard headers)
 app.options('*',cors())
+
 //set security http headers
 
 app.use(helmet());
@@ -34,7 +35,7 @@ if (process.env.NODE_ENV === "development") {
 }
 //rate limiting
 const limiter = rateLimit({
-  max: 1000,
+  max: 10000,
   windowMs: 60 * 60 * 1000, //1 hour
   message: "Too many requests, please try again in an hour",
 });

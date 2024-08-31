@@ -7,7 +7,7 @@ class APIFeatures {
   filter() {
     const queryObj = { ...this.queryString };
     //exclude pagination, sorting, numberOfResults, from queryObj
-    const excludedFields = ["page", "sort", "limit", "fields"];
+    const excludedFields = ["page","search", "sort", "limit", "fields"];
     excludedFields.forEach((el) => delete queryObj[el]);
     //build query then execute query by using await
 
@@ -21,6 +21,18 @@ class APIFeatures {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     this.query = this.query.find(JSON.parse(queryStr));
     //return entire query object so we can chain more functions
+    return this;
+  }
+  search() {
+    if (this.queryString.search) {
+      // Perform a case-insensitive search for names containing the search term
+      const searchQuery = this.queryString.search;
+      this.query = this.query.find({
+        name: { $regex: searchQuery, $options: 'i' } // Case-insensitive and search anywhere in the name
+      });
+    }
+  
+    // Return the query object to allow chaining
     return this;
   }
 

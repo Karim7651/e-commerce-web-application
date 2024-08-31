@@ -1,10 +1,7 @@
 "use client";
-import { useUserData } from "../_contexts/UserContext";
-import useTheme from "../_contexts/UserContext";
 import ThemeSwitch from "./ThemeSwitch";
 import Link from "next/link"
 export default function Navbar() {
-  const {userData} = useUserData();
   
   return (
     <div className="navbar bg-base-300 ">

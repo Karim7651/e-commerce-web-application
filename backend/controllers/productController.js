@@ -75,12 +75,13 @@ export const uploadProductImages = upload.fields([
   { name: "images", maxCount: 3 },
 ]);
 export const createProduct = createOne(Product)
-// won't populate review here that would be too much info
+
 export const getAllProductsUser = catchAsync(async(req,res) =>{
   let query = Product.find({ isHidden: false, isApproved: true });
   const features = new APIFeatures(query, req.query)
   .filter()
   .sort()
+  .search()
   .limitFields()
   .paginate();
   const products = await features.query;
