@@ -5,8 +5,6 @@ import Skeleton from "./_components/Skeleton";
 
 export default function Home() {
   return (
-      <div>
-        
-      </div>
+      <ProductListWithSuspense/>
   );
 }

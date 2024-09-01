@@ -4,7 +4,6 @@ import ProductCard from "./ProductCard";
 
 
 export default async function ProductList() {
-  console.log("here")
   const products = await getProducts();
   if (!products) return null;
   
