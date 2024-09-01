@@ -18,12 +18,19 @@ import reviewRouter from "./routes/reviewRoutes.js";
 import adminRouter from "./routes/adminRoutes.js"
 import cartRouter from "./routes/cartRoutes.js"
 const app = express();
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow all origins
+    callback(null, origin || '*');
+  },
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+};
 //1) global middlewares
 //Implement CORS(Headers)
 //Access-Control-Allow-Origin : * (all requests no matter where they're coming from)
-app.use(cors());
+app.use(cors(corsOptions));
 //allow non simple requests (patch/delete/options/uses cookies / non standard headers)
-app.options('*',cors())
+app.options('*', cors(corsOptions));
 
 //set security http headers
 

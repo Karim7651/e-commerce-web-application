@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="dark">
       <body
-        className={`raleway.className bg-base-700 grid grid-rows-[auto,1fr,auto] min-h-screen overflow-x-hidden `}
+        className={`raleway.className bg-base-700 grid grid-rows-[auto,1fr,auto] min-h-screen overflow-x-hidden`}
       >
         <Navbar />
         {children}

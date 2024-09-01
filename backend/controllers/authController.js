@@ -46,6 +46,11 @@ export const signup = catchAsync(async (req, res, next) => {
   const newCart = await Cart.create({});
   //only take fields that are required
   //never take role field -> security flaw otherwise
+  let role = req.body.role
+  if(role !== "customer" || role !== "seller"){
+    role = "customer"
+
+  }
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -53,6 +58,7 @@ export const signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     mobileNumber: req.body.mobileNumber,
     address: req.body.address,
+    role:role,
     cart: newCart,
   });
   createSendToken(newUser, 201, res);

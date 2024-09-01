@@ -1,4 +1,5 @@
 "use client";
+import Modal from "./Modal";
 import ThemeSwitch from "./ThemeSwitch";
 import Link from "next/link"
 export default function Navbar() {
@@ -89,6 +90,7 @@ export default function Navbar() {
           </div>
         </div>
         <ThemeSwitch />
+        <Modal/>
       </div>
     </div>
   );
