@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
 import SignUpLoginTab from "./SignUpLoginTab";
 
-function Modal() {
+function CredentialsModal() {
   return (
     <div>
       <button
@@ -13,7 +13,7 @@ function Modal() {
       </button>
       <dialog id="my_modal_2" className="modal modal-bottom lg:modal-middle ">
         <div className="modal-box !rounded-md">
-          <SignUpLoginTab/>
+          <SignUpLoginTab />
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
@@ -23,4 +23,4 @@ function Modal() {
   );
 }
 
-export default Modal;
+export default CredentialsModal;

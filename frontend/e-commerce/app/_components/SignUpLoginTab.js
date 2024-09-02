@@ -2,14 +2,19 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Loading from "./Loading";
-
+import { useUser } from "../_contexts/userContext";
+import { Toaster, toast } from "sonner";
 export default function SignUpLoginTab() {
+  const { setUser } = useUser();
   const [formData, setFormData] = useState({
     name: "",
     password: "",
     passwordConfirm: "",
     email: "",
     address: "",
+    loginEmail: "",
+    loginPassword: "",
+    forgetEmail:"",
     userType: "customer",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -88,7 +93,9 @@ export default function SignUpLoginTab() {
       }
 
       const data = await response.json();
-      console.log("Sign Up successful:", data);
+      console.log("Sign Up successful:", data.data.user);
+      setUser(data.data.user);
+      toast.success("Sign Up sucessful, You're now logged in");
 
       // Handle success, e.g., navigate to a different page or show a success message
     } catch (error) {
@@ -103,6 +110,7 @@ export default function SignUpLoginTab() {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    setFormErrors({});
     setIsLoading(true);
 
     const errors = {};
@@ -133,11 +141,17 @@ export default function SignUpLoginTab() {
         const errorData = await response.json();
         throw new Error(errorData.message || "Login failed");
       }
-
       const data = await response.json();
-      console.log("Login successful:", data);
+      setUser(data.data.user);
+      toast.success("Logged in sucessfully");
     } catch (error) {
-      console.error("Login error:", error);
+      console.log(error.message);
+      if (error.message.includes("Incorrect")) {
+        errors.credentialsError = "Incorrect email or password";
+        setFormErrors(errors);
+      } else {
+        error.credentialsError(error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -146,9 +160,42 @@ export default function SignUpLoginTab() {
   const handleForgetPasswordSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Handle Forget Password submission
-    console.log("Forget Password form submitted:", formData.email);
-    // setIsLoading(false);
+    const errors = {};
+
+    if (!formData.forgetEmail) {
+      errors.forgetEmail = "Email is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const endpoint = `${process.env.NEXT_PUBLIC_API}/users/forgetPassword`;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: formData.forgetEmail }),
+      });
+
+      const data = await response.json();
+      console.log(formData.forgetEmail)
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong!");
+      }
+      setFormErrors({});
+      //just a hack to hide modal
+      toast.success("Email sent sucessfully");
+    } catch (error) {
+      errors.forgetError = "This email isn't associated with any user";
+      setFormErrors(errors);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -168,7 +215,7 @@ export default function SignUpLoginTab() {
         <TabsContent value="signup">
           <form
             onSubmit={handleSignUpSubmit}
-            className="flex flex-col justify-center items-center "
+            className="flex flex-col justify-center items-center"
           >
             <label htmlFor="name" className="mb-2">
               <div className="label">
@@ -184,6 +231,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.name ? "input-error" : ""
                 }`}
+                autocomplete="name"
               />
               {formErrors.name && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -206,6 +254,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.email ? "input-error" : ""
                 }`}
+                autocomplete="email"
               />
               {formErrors.email && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -230,6 +279,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.password ? "input-error" : ""
                 }`}
+                autocomplete="new-password"
               />
               {formErrors.password && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -254,10 +304,13 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.passwordConfirm ? "input-error" : ""
                 }`}
+                autocomplete="new-password"
               />
-              <p className="text-error text-xs mt-1 ml-2">
-                {formErrors.passwordConfirm}
-              </p>
+              {formErrors.passwordConfirm && (
+                <p className="text-error text-xs mt-1 ml-2">
+                  {formErrors.passwordConfirm}
+                </p>
+              )}
             </label>
 
             <label htmlFor="address" className="mb-2">
@@ -276,10 +329,13 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.address ? "input-error" : ""
                 }`}
+                autocomplete="street-address"
               />
-              <p className="text-error text-xs mt-1 ml-2">
-                {formErrors.address}
-              </p>
+              {formErrors.address && (
+                <p className="text-error text-xs mt-1 ml-2">
+                  {formErrors.address}
+                </p>
+              )}
             </label>
 
             <label htmlFor="mobileNumber" className="mb-2">
@@ -298,10 +354,13 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.mobileNumber ? "input-error" : ""
                 }`}
+                autocomplete="tel"
               />
-              <p className="text-error text-xs mt-1 ml-2">
-                {formErrors.mobileNumber}
-              </p>
+              {formErrors.mobileNumber && (
+                <p className="text-error text-xs mt-1 ml-2">
+                  {formErrors.mobileNumber}
+                </p>
+              )}
             </label>
 
             <label htmlFor="role" className="mb-5">
@@ -314,6 +373,7 @@ export default function SignUpLoginTab() {
                 value={formData.role}
                 onChange={handleChange}
                 className="select select-bordered select-sm w-[13rem] block"
+                autocomplete="off"
               >
                 <option value="customer">Customer</option>
                 <option value="seller">Seller</option>
@@ -329,7 +389,7 @@ export default function SignUpLoginTab() {
         <TabsContent value="login">
           <form
             onSubmit={handleLoginSubmit}
-            className="flex flex-col justify-center items-center "
+            className="flex flex-col justify-center items-center"
           >
             <label htmlFor="loginEmail" className="mb-2">
               <div className="label">
@@ -345,6 +405,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.loginEmail ? "input-error" : ""
                 }`}
+                autocomplete="email"
               />
               {formErrors.loginEmail && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -367,6 +428,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.loginPassword ? "input-error" : ""
                 }`}
+                autocomplete="current-password"
               />
               {formErrors.loginPassword && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -374,6 +436,9 @@ export default function SignUpLoginTab() {
                 </p>
               )}
             </label>
+            <p className="text-error text-md mb-4">
+              {formErrors.credentialsError}
+            </p>
 
             <button type="submit" className="btn btn-sm btn-outline">
               {isLoading ? <Loading /> : "Login"}
@@ -384,9 +449,9 @@ export default function SignUpLoginTab() {
         <TabsContent value="forget">
           <form
             onSubmit={handleForgetPasswordSubmit}
-            className="flex flex-col justify-center items-center "
+            className="flex flex-col justify-center items-center"
           >
-            <label htmlFor="forgetEmail" className="mb-5">
+            <label htmlFor="forgetEmail" className="mb-2">
               <div className="label">
                 <span className="label-text text-md">Enter your email</span>
               </div>
@@ -397,9 +462,18 @@ export default function SignUpLoginTab() {
                 placeholder="Email"
                 value={formData.forgetEmail}
                 onChange={handleChange}
-                className="input input-bordered input-sm max-w-[13rem] block"
+                className={`input input-bordered input-sm max-w-[13rem] block ${
+                  formErrors.forgetEmail ? "input-error" : ""
+                }`}
+                autoComplete="email"
               />
+              {formErrors.forgetEmail && (
+                <p className="text-error text-xs mt-1 ml-2">
+                  {formErrors.forgetEmail}
+                </p>
+              )}
             </label>
+            <p className="text-error text-md mb-4">{formErrors.forgetError}</p>
 
             <button type="submit" className="btn btn-sm btn-outline">
               {isLoading ? <Loading /> : "Submit"}

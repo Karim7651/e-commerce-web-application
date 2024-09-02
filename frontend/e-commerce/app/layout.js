@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "./_components/Navbar";
 import Footer from "./_components/Footer";
 import { Toaster } from "sonner";
+import { UserProvider } from "./_contexts/userContext";
 
 const raleway = Raleway({ subsets: ["latin"] });
 const inter = Inter({ subsets: ["latin"] });
@@ -18,9 +19,11 @@ export default function RootLayout({ children }) {
       <body
         className={`raleway.className bg-base-700 grid grid-rows-[auto,1fr,auto] min-h-screen overflow-x-hidden`}
       >
-        <Navbar />
-        {children}
-        <Toaster richColors />
+        <UserProvider>
+          <Navbar />
+          {children}
+          <Toaster richColors />
+        </UserProvider>
         <Footer />
       </body>
     </html>

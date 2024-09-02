@@ -208,7 +208,7 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   console.log(user);
   if (!user) {
-    return next(new AppError("There is not user with that email address", 404));
+    return next(new AppError("There is no user with that email address", 404));
   }
   if (user.role === "admin") {
     return next(new AppError("Admins cannot reset their password", 403));

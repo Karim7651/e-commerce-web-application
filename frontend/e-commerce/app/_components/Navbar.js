@@ -1,9 +1,13 @@
 "use client";
-import Modal from "./Modal";
+import LogoutButton from "./LogoutButton";
+import { useUser } from "../_contexts/userContext";
+import CredentialsModal from "./CredentialsModal";
 import ThemeSwitch from "./ThemeSwitch";
-import Link from "next/link"
+import Link from "next/link";
 export default function Navbar() {
-  
+  const { user } = useUser();
+  console.log(user);
+
   return (
     <div className="navbar bg-base-300 ">
       <div className="navbar-start">
@@ -90,7 +94,8 @@ export default function Navbar() {
           </div>
         </div>
         <ThemeSwitch />
-        <Modal/>
+        {!user && <CredentialsModal />}
+        {user && <LogoutButton />}
       </div>
     </div>
   );

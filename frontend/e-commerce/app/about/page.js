@@ -1,10 +1,7 @@
-import Modal from "../_components/Modal"
-
+import Modal from "../_components/CredentialsModal";
 
 function about() {
-    return (
-        <Modal/>
-    )
+  return <Modal />;
 }
 
-export default about
+export default about;
