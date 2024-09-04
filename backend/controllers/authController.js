@@ -46,10 +46,9 @@ export const signup = catchAsync(async (req, res, next) => {
   const newCart = await Cart.create({});
   //only take fields that are required
   //never take role field -> security flaw otherwise
-  let role = req.body.role
-  if(role !== "customer" || role !== "seller"){
-    role = "customer"
-
+  let role = req.body.role;
+  if (role !== "customer" || role !== "seller") {
+    role = "customer";
   }
   const newUser = await User.create({
     name: req.body.name,
@@ -58,7 +57,7 @@ export const signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     mobileNumber: req.body.mobileNumber,
     address: req.body.address,
-    role:role,
+    role: role,
     cart: newCart,
   });
   createSendToken(newUser, 201, res);
@@ -149,12 +148,19 @@ export const isLoggedIn = catchAsync(async (req, res, next) => {
   // 3) Check if the user still exists
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
-    return res.status(401).json({ status: "fail", message: "User no longer exists" });
+    return res
+      .status(401)
+      .json({ status: "fail", message: "User no longer exists" });
   }
 
   // 4) Check if the user changed their password after the token was issued
   if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return res.status(401).json({ status: "fail", message: "Password changed, please log in again" });
+    return res
+      .status(401)
+      .json({
+        status: "fail",
+        message: "Password changed, please log in again",
+      });
   }
 
   // 5) Send response with user data
@@ -206,7 +212,6 @@ export const isAuthorizedToPatchOrDeleteReview = catchAsync(
 export const forgetPassword = catchAsync(async (req, res, next) => {
   //1) get user based on email
   const user = await User.findOne({ email: req.body.email });
-  console.log(user);
   if (!user) {
     return next(new AppError("There is no user with that email address", 404));
   }
@@ -215,14 +220,11 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
   }
   //2) generate the random reset token
   const resetToken = user.createPasswordResetToken();
-  console.log(resetToken);
   //we're only modifying passwordResetToken and passwordResetExpires, so we can't run validators
   //save as we only modfied, but we didn't save
   await user.save({ validateBeforeSave: false });
   // 3) create reset url
-  const resetURL = `${req.protocol}://${req.get(
-    "host"
-  )}/api/v1/users/resetPassword/${resetToken}`;
+  const resetURL = `${process.env.FRONT}/resetPassword/${resetToken}`;
 
   // 4) set email options
   const mailOptions = {

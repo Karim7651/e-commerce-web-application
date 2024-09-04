@@ -32,14 +32,14 @@ function ProductCard({ product }) {
           <h2 className="font-[700]">{name}</h2>
         </Link>
         <div className="flex flex-row justify-start items-center">
-          {price != finalPrice && (
-            <span className="line-through inline-block text-sm !text-opacity-70 text-gray-500">{`${price} `}</span>
-          )}
           {
             <span
-              className={`font-[500] ${price !== finalPrice ? "ml-1" : ""} `}
-            >{`${finalPrice} EGP`}</span>
+              className={`font-[500] ${price !== finalPrice ? "mr-2" : ""} `}
+            >{`${finalPrice.toLocaleString()} EGP`}</span>
           }
+          {price != finalPrice && (
+            <span className="line-through inline-block text-md !text-opacity-80 text-gray-500">{`${price.toLocaleString()} `}</span>
+          )}
         </div>
         <div className="flex mb-3 flex-row justify-center items-center">
           {ratingsQuantity != 0 && <RatingStatic rating={ratingsAverage} />}

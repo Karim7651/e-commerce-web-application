@@ -10,11 +10,12 @@ export default function SignUpLoginTab() {
     name: "",
     password: "",
     passwordConfirm: "",
+    mobileNumber: "",
     email: "",
     address: "",
     loginEmail: "",
     loginPassword: "",
-    forgetEmail:"",
+    forgetEmail: "",
     userType: "customer",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -25,10 +26,13 @@ export default function SignUpLoginTab() {
       name: "",
       password: "",
       passwordConfirm: "",
+      mobileNumber: "",
       email: "",
       address: "",
-      mobileNumber: "",
-      role: "customer",
+      loginEmail: "",
+      loginPassword: "",
+      forgetEmail: "",
+      userType: "customer",
     });
     setFormErrors({});
   };
@@ -181,13 +185,12 @@ export default function SignUpLoginTab() {
         },
         body: JSON.stringify({ email: formData.forgetEmail }),
       });
-
       const data = await response.json();
-      console.log(formData.forgetEmail)
       if (!response.ok) {
         throw new Error(data.message || "Something went wrong!");
       }
       setFormErrors({});
+      document.getElementById("my_modal_2").close();
       //just a hack to hide modal
       toast.success("Email sent sucessfully");
     } catch (error) {
@@ -231,7 +234,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.name ? "input-error" : ""
                 }`}
-                autocomplete="name"
+                autoComplete="name"
               />
               {formErrors.name && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -254,7 +257,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.email ? "input-error" : ""
                 }`}
-                autocomplete="email"
+                autoComplete="email"
               />
               {formErrors.email && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -279,7 +282,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.password ? "input-error" : ""
                 }`}
-                autocomplete="new-password"
+                autoComplete="new-password"
               />
               {formErrors.password && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -304,7 +307,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.passwordConfirm ? "input-error" : ""
                 }`}
-                autocomplete="new-password"
+                autoComplete="new-password"
               />
               {formErrors.passwordConfirm && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -329,7 +332,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.address ? "input-error" : ""
                 }`}
-                autocomplete="street-address"
+                autoComplete="street-address"
               />
               {formErrors.address && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -354,7 +357,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.mobileNumber ? "input-error" : ""
                 }`}
-                autocomplete="tel"
+                autoComplete="tel"
               />
               {formErrors.mobileNumber && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -373,7 +376,7 @@ export default function SignUpLoginTab() {
                 value={formData.role}
                 onChange={handleChange}
                 className="select select-bordered select-sm w-[13rem] block"
-                autocomplete="off"
+                autoComplete="off"
               >
                 <option value="customer">Customer</option>
                 <option value="seller">Seller</option>
@@ -405,7 +408,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.loginEmail ? "input-error" : ""
                 }`}
-                autocomplete="email"
+                autoComplete="email"
               />
               {formErrors.loginEmail && (
                 <p className="text-error text-xs mt-1 ml-2">
@@ -428,7 +431,7 @@ export default function SignUpLoginTab() {
                 className={`input input-bordered input-sm max-w-[13rem] block ${
                   formErrors.loginPassword ? "input-error" : ""
                 }`}
-                autocomplete="current-password"
+                autoComplete="current-password"
               />
               {formErrors.loginPassword && (
                 <p className="text-error text-xs mt-1 ml-2">
