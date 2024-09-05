@@ -49,14 +49,14 @@
 
 
 
-const RatingStatic = ({ rating }) => {
+const RatingStatic = ({ rating,size="1.4rem" }) => {
   const containerStyle = {
     textAlign: 'left',
     fontStyle: 'normal',
     display: 'inline-block',
     position: 'relative',
     unicodeBidi: 'bidi-override',
-    fontSize: '1.4rem',
+    fontSize: size,
   };
 
   const starBeforeStyle = {

@@ -4,7 +4,7 @@ import RatingStatic from "./RatingStatic";
 import { ShoppingCartPlus } from "tabler-icons-react";
 function ProductCard({ product }) {
   const {
-    id,
+    _id,
     name,
     description,
     ratingsAverage,
@@ -15,20 +15,21 @@ function ProductCard({ product }) {
     finalPrice,
     imageCover,
   } = product;
+  console.log(_id);
   return (
     <div className="card  bg-base-200 w-[15rem] shadow-2xl  ">
       <figure className="h-[10rem] !relative ">
-        <Link href={`/products/${slug}`}>
+        <Link href={`/products/${_id}`}>
           <Image
             src={imageCover}
             alt="title"
             fill
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: "contain" }}
           />
         </Link>
       </figure>
       <div className="card-body p-5">
-        <Link href={`/products/${slug}`}>
+        <Link href={`/products/${_id}`}>
           <h2 className="font-[700]">{name}</h2>
         </Link>
         <div className="flex flex-row justify-start items-center">

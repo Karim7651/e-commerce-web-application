@@ -7,5 +7,14 @@ export const getProducts = async () => {
   } catch (err) {
     console.log(err);
   }
-  
 };
+export const getProductDetails = async(productId)=>{
+  const productEndPoint = `${process.env.NEXT_PUBLIC_API}/products/${productId}`
+  try{
+    const product = await fetch(productEndPoint,{next:{revalidate:0}})
+    const productData = await product.json()
+    return productData.data.data
+  }catch(err){
+    console.log(err)
+  }
+}

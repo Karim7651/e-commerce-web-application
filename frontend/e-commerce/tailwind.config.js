@@ -23,7 +23,7 @@ module.exports = {
         "2xl": "1400px",
       },
       fontFamily: {
-        raleway: ['"Raleway"', '"Inter"', 'sans-serif'],
+        raleway: ['"Raleway"', '"Inter"', "sans-serif"],
       },
 
       keyframes: {
