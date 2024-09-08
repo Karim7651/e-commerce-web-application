@@ -32,6 +32,3 @@
 img {
   user-select: none;
 }
-body {
-  @apply font-raleway;
-}

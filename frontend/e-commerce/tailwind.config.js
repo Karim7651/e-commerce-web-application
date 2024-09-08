@@ -22,9 +22,7 @@ module.exports = {
         xl: "1280px",
         "2xl": "1400px",
       },
-      fontFamily: {
-        raleway: ['"Raleway"', '"Inter"', "sans-serif"],
-      },
+      
 
       keyframes: {
         "accordion-down": {

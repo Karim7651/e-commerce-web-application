@@ -12,11 +12,25 @@ const productSchema = new mongoose.Schema(
     },
     slug: String,
     description: {
-      type: String,
+      type: [String],
       required: [true, "A product must have a description"],
-      trim: true, //remove starting trailing spaces
-      maxlength: [200, "A product description must at most 200 characters"],
-      minlength: [5, "A product name must at least 5 characters"],
+      validate: [
+        {
+          validator: function (arr) {
+            return arr.length > 0; // Ensure array has at least one element
+          },
+          message: "A product must have at least one description item",
+        },
+        {
+          validator: function (arr) {
+            return arr.every((str) => str.trim().length > 4 && str.trim().length <= 200); // Validate length of each item
+          },
+          message: "Each description item must be between 5 and 200 characters long",
+        },
+      ],
+      set: function (arr) {
+        return arr.map((str) => str.trim()); // Trim spaces from each item in the array
+      },
     },
     ratingsAverage: {
       type: Number,
