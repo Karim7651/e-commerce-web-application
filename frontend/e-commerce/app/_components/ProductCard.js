@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import RatingStatic from "./RatingStatic";
-import { ShoppingCartPlus } from "tabler-icons-react";
+import ShoppingCartPlus from "tabler-icons-react/dist/icons/shopping-cart-plus";
 function ProductCard({ product }) {
   const {
     _id,
