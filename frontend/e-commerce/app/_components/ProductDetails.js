@@ -6,6 +6,7 @@ import { Truck, Package, ShoppingCartPlus } from "tabler-icons-react";
 import { toast } from "sonner";
 import ProductDescriptionAccordion from "./ProductDescriptionAccordion";
 import Breadcrumb from "./Breadcrumb"; // Import the Breadcrumb component
+import Link from "next/link"
 
 function ProductDetails({ product }) {
   if (!product) {
@@ -24,13 +25,38 @@ function ProductDetails({ product }) {
     setTimeout(() => {
       setCurrentImage(index);
       setIsFading(false);
+      if (thumbnailsRef.current) {
+        const thumbnail = thumbnailsRef.current.children[index];
+        if (thumbnail) {
+          const container = thumbnailsRef.current;
+          const isHorizontal = container.scrollWidth > container.clientWidth;
+          const isVertical = container.scrollHeight > container.clientHeight;
+          if (isHorizontal) {
+            container.scrollTo({
+              left:
+                thumbnail.offsetLeft -
+                container.clientWidth / 2 +
+                thumbnail.clientWidth / 2,
+              behavior: "smooth",
+            });
+          } else if (isVertical) {
+            container.scrollTo({
+              top:
+                thumbnail.offsetTop -
+                container.clientHeight / 2 +
+                thumbnail.clientHeight / 2,
+              behavior: "smooth",
+            });
+          }
+        }
+      }
     }, 300);
   };
 
   const handleQuantityChange = (delta) => {
     const newQuantity = quantity + delta;
     if (newQuantity > product.stock) {
-      toast.error("You can't add more than available stock");
+      toast.error("You can't add more than the available stock");
       return;
     }
     setQuantity(newQuantity > 0 ? newQuantity : 1);
@@ -51,11 +77,11 @@ function ProductDetails({ product }) {
   ];
 
   return (
-    <div className="mx-auto py-5 px-4">
+    <div className="mx-auto py-5 px-4 ">
       {/* Breadcrumb Component */}
       <Breadcrumb array={breadcrumbItems} />
 
-      <div className="flex gap-3 items-center flex-col lg:flex-row justify-center">
+      <div className="flex gap-3 items-center flex-col lg:flex-row justify-center  border-[0.05rem] border-neutral-600 rounded-md px-8 py-8 mt-6">
         {/* Thumbnails and Main Image */}
         <div className="flex flex-row gap-3 justify-center relative lg:flex-col lg:h-70 lg:mr-[2rem] lg:h-[25rem] lg:w-[8rem] xs:w-[25rem] xs:overflow-x-auto lg:overflow-y-visible xs:overflow-y-hidden">
           <div
@@ -95,8 +121,9 @@ function ProductDetails({ product }) {
 
         <div className="self-center my-3 lg:my-16 lg:ml-10">
           {/* Product Info */}
-          <h2 className="text-2xl font-bold mb-4">{product.name}</h2>
-          <p className="font-extralight">{product.mainCategory}</p>
+          <h2 className="text-2xl font-bold mb-3">{product.name}</h2>
+          {/* <p className="font-extralight">{product.mainCategory}</p> */}
+          <Link href={`/categoryName=${product.mainCategory}`} className="font-light">{product.mainCategory}</Link>
           <div className="divider divider-neutral mt-1"></div>
 
           {/* Price and Stock */}
@@ -123,7 +150,7 @@ function ProductDetails({ product }) {
               </div>
             ) : product.stock > 0 && product.stock <= 10 ? (
               <div className="flex items-center ">
-                <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
+                <div className="w-2 h-2 rounded-full bg-orange-300 mr-2"></div>
                 <span>Only {product.stock} left</span>
               </div>
             ) : (
@@ -200,14 +227,14 @@ function ProductDetails({ product }) {
           {/* Delivery Info */}
           <div className="flex flex-col space-y-3 text-sm font-medium">
             <div className="flex items-center">
-              <Truck size={24} className="mr-3" />
+              <Truck size={30} className="mr-3" />
               <p>
                 <span>Doorstep Delivery,</span> Your order will be shipped in
                 2-5 days.
               </p>
             </div>
             <div className="flex items-center">
-              <Package size={24} className="mr-3" />
+              <Package size={30} className="mr-3" />
               <p>Easy Returns, within 30 days from the delivery date.</p>
             </div>
           </div>
@@ -215,10 +242,9 @@ function ProductDetails({ product }) {
       </div>
 
       {/* Product Description */}
-      <div className="mx-auto mt-5 px-4">
+      <div className="mx-auto mt-5 ">
         <ProductDescriptionAccordion
           description={product.description}
-          specifications={product.specifications}
         />
       </div>
     </div>
