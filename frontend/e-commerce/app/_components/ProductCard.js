@@ -15,7 +15,6 @@ function ProductCard({ product }) {
     finalPrice,
     imageCover,
   } = product;
-  console.log(_id);
   return (
     <div className="card  bg-base-200 w-[15rem] shadow-2xl  ">
       <figure className="h-[10rem] !relative ">

@@ -9,7 +9,7 @@ function CredentialsModal() {
         className="btn btn-outline btn-sm ml-3"
         onClick={() => document.getElementById("my_modal_2").showModal()}
       >
-        Login
+        Account
       </button>
       <dialog id="my_modal_2" className="modal modal-bottom lg:modal-middle ">
         <div className="modal-box !rounded-md">

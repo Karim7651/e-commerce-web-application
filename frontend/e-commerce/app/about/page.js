@@ -1,7 +1,7 @@
 import Modal from "../_components/CredentialsModal";
 
 function about() {
-  return <Modal />;
+  return <div>about</div>;
 }
 
 export default about;

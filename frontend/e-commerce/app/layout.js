@@ -38,7 +38,6 @@ export const metadata = {
     description: "E-Commerce webapp created by Karim Atef",
     image: "https://your-website-url.com/twitter-image.jpg",
   },
-  favicon: "/favicon.ico",
 };
 
 
@@ -46,7 +45,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="dark">
       <body
-        className={`${inter.className} bg-base-700 grid grid-rows-[auto,1fr,auto] min-h-screen overflow-x-hidden`}
+        className={`${inter.className} bg-base-700 grid grid-rows-[auto,1fr,auto] min-h-screen overflow-x-hidden bg-base-100`}
       >
         <UserProvider>
           <Navbar />
