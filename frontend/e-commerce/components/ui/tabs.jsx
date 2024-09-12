@@ -11,7 +11,7 @@ const TabsList = React.forwardRef(({ className, ...props }, ref) => (
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-19 items-center justify-center rounded-xl ",
+      "inline-flex h-19 items-center justify-center rounded-md ",
       className
     )}
     {...props} />
@@ -23,9 +23,9 @@ const TabsTrigger = React.forwardRef(({ className, ...props }, ref) => (
     ref={ref}
     className={cn(
       // Base styles from your Daisy UI theme
-      'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1  text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-disabled:pointer-events-none disabled:opacity-50',
+      ' inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1  text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-disabled:pointer-events-none disabled:opacity-50',
       // Active state styles from your Daisy UI theme
-      'data-[state=active]:bg-base-300  data-[state=active]:shadow ',
+      'data-[state=active]:bg-neutral-600  data-[state=active]:shadow ',
       className
     )}
     {...props}
@@ -37,7 +37,7 @@ const TabsContent = React.forwardRef(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      "mt-2 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 dark:ring-offset-neutral-950 dark:focus-visible:ring-neutral-300",
+      "bg-base-100 mt-2 ring-offset-white focus-visible:outline-none  ",
       className
     )}
     {...props} />

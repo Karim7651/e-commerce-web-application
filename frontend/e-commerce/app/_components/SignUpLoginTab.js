@@ -202,7 +202,7 @@ export default function SignUpLoginTab() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center bg-base-100 ">
       <Tabs defaultValue="login" className="" onValueChange={clearStates}>
         <TabsList>
           <TabsTrigger value="signup" disabled={isLoading}>

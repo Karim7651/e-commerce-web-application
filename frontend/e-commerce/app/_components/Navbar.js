@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import LogoutButton from "./LogoutButton";
+import { usePathname } from "next/navigation";
 import { useUser } from "../_contexts/userContext";
 import CredentialsModal from "./CredentialsModal";
 import ThemeSwitch from "./ThemeSwitch";
@@ -9,9 +10,9 @@ import Search from "tabler-icons-react/dist/icons/search";
 import HomeIcon from "tabler-icons-react/dist/icons/home";
 import InfoCircleIcon from "tabler-icons-react/dist/icons/info-circle";
 import QuestionMarkIcon from "tabler-icons-react/dist/icons/question-mark";
-
+import SearchBar from "./SearchBar";
 export default function Navbar() {
-  const [isFocused, setIsFocused] = useState(false);
+  const pathname = usePathname();
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
@@ -23,7 +24,14 @@ export default function Navbar() {
 
   // Close the dropdown menu when clicking outside of it
   const handleClickOutside = (event) => {
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
+    const mobileMenuButton = document.getElementById("hamburger");
+
+    // If the click is outside of the menu and not on the mobile menu button, close the dropdown
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(event.target) &&
+      !mobileMenuButton.contains(event.target)
+    ) {
       setIsOpen(false);
     }
   };
@@ -50,6 +58,7 @@ export default function Navbar() {
           tabIndex={0}
           role="button"
           className="btn btn-ghost lg:hidden"
+          id="hamburger"
           onClick={toggleDropdown}
         >
           <svg
@@ -104,26 +113,61 @@ export default function Navbar() {
         </ul>
 
         {/* Brand Name */}
-        <Link href="/" className="btn btn-ghost text-xl">
+        <Link href="/" className="btn btn-ghost hover:bg-transparent text-xl">
           E-Commerce
         </Link>
-        
       </div>
 
       {/* Navbar Center */}
-      <div className="navbar-center hidden lg:flex ">
-        <ul className="menu menu-horizontal px-1">
+      {/* <div className="navbar-center hidden lg:flex">
+        <ul className="flex flex-row px-1 gap-4 justify-center items-center">
           <li>
-            <Link href="/">Homepage</Link>
+            <Link
+              href="/"
+              className={`relative pb-1 transition-all duration-300 ${
+                pathname === "/" ? "font-semibold" : ""
+              }`}
+            >
+              Homepage
+              <span
+                className={`absolute bottom-0 left-0 h-0.5 w-full bg-base-content transition-transform duration-300 ease-in-out ${
+                  pathname === "/" ? "scale-x-100" : "scale-x-0"
+                }`}
+              ></span>
+            </Link>
           </li>
           <li>
-            <Link href="/about">About</Link>
+            <Link
+              href="/about"
+              className={`relative pb-1 transition-all duration-300 ${
+                pathname.startsWith("/about") ? "font-semibold" : ""
+              }`}
+            >
+              About
+              <span
+                className={`absolute bottom-0 left-0 h-0.5 w-full bg-base-content  transition-transform duration-300 ease-in-out ${
+                  pathname.startsWith("/about") ? "scale-x-100" : "scale-x-0"
+                }`}
+              ></span>
+            </Link>
           </li>
           <li>
-            <Link href="/faq">FAQ</Link>
+            <Link
+              href="/faq"
+              className={`relative pb-1 transition-all duration-300 ${
+                pathname.startsWith("/faq") ? "font-semibold" : ""
+              }`}
+            >
+              FAQ
+              <span
+                className={`absolute bottom-0 left-0 h-0.5 w-full bg-base-content transition-transform duration-300 ease-in-out ${
+                  pathname.startsWith("/faq") ? "scale-x-100" : "scale-x-0"
+                }`}
+              ></span>
+            </Link>
           </li>
         </ul>
-      </div>
+      </div> */}
 
       {/* Navbar End */}
       <div className="navbar-end flex items-center w-auto">
@@ -146,7 +190,7 @@ export default function Navbar() {
             />
           </div>
         </div>*/}
-
+        <SearchBar />
         {/* Cart Icon */}
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
@@ -165,7 +209,9 @@ export default function Navbar() {
                   d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                 />
               </svg>
-              <span className="badge badge-sm indicator-item">8</span>
+              <span className="badge badge-sm bg-green-500 indicator-item text-black">
+                8
+              </span>
             </div>
           </div>
           <div
@@ -173,7 +219,7 @@ export default function Navbar() {
             className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow"
           >
             <div className="card-body">
-              <span className="text-lg font-bold">8 Items</span>
+              <span className="text-lg font-bold ">8 Items</span>
               <span className="text-info">Subtotal: $999</span>
               <div className="card-actions">
                 <button className="btn btn-primary btn-block">View cart</button>

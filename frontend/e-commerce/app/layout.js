@@ -45,7 +45,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="dark">
       <body
-        className={`${inter.className} bg-base-700 grid grid-rows-[auto,1fr,auto] min-h-screen overflow-x-hidden bg-base-100`}
+        className={`${inter.className} bg-base-700 grid grid-rows-[auto,1fr,auto] min-h-screen overflow-x-hidden bg-base-100 text-base-content`}
       >
         <UserProvider>
           <Navbar />

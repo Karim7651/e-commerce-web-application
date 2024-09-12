@@ -16,8 +16,8 @@ function ProductCard({ product }) {
     imageCover,
   } = product;
   return (
-    <div className="card  bg-base-200 w-[15rem] shadow-2xl  ">
-      <figure className="h-[10rem] !relative ">
+    <div className="card bg-base-200 md:w-[15rem] shadow-lg xs:w-[20rem]  ">
+      <figure className="md:h-[10rem] xs:h-[15rem] relative ">
         <Link href={`/products/${_id}`}>
           <Image
             src={imageCover}
@@ -29,7 +29,7 @@ function ProductCard({ product }) {
       </figure>
       <div className="card-body p-5">
         <Link href={`/products/${_id}`}>
-          <h2 className="font-[700]">{name}</h2>
+          <h2 className="font-[700] primary-content">{name}</h2>
         </Link>
         <div className="flex flex-row justify-start items-center">
           {
