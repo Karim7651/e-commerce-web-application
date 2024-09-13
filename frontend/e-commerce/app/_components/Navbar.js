@@ -88,7 +88,7 @@ export default function Navbar() {
         >
           <Link
             href="/"
-            className="flex flex-row items-center p-2 hover:bg-base-300"
+            className="flex flex-row items-center p-2 hover:bg-neutral-600 hover:bg-opacity-50"
             onClick={handleLinkClick}
           >
             <HomeIcon size={20} />
@@ -96,7 +96,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="/about"
-            className="flex flex-row items-center p-2 hover:bg-base-300"
+            className="flex flex-row items-center p-2 hover:bg-neutral-600 hover:bg-opacity-50"
             onClick={handleLinkClick}
           >
             <InfoCircleIcon size={20} />
@@ -104,7 +104,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="/faq"
-            className="flex flex-row items-center p-2 hover:bg-base-300"
+            className="flex flex-row items-center p-2 hover:bg-neutral-600 hover:bg-opacity-50"
             onClick={handleLinkClick}
           >
             <QuestionMarkIcon size={20} />

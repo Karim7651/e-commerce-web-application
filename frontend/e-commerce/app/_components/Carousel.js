@@ -43,7 +43,7 @@ const Carousel = () => {
   };
 
   return (
-    <div className="relative my-10">
+    <header className="relative mt-20">
       {/* Carousel Slides */}
       <div
         className="relative flex transition-transform duration-700 ease-in-out"
@@ -58,9 +58,12 @@ const Carousel = () => {
               src={image.src}
               alt={image.alt}
               width={1500}
-              height={500}
+              height={400}
               className="rounded-md shadow-lg"
-              style={{ objectFit: "cover" }}
+              style={{
+                objectFit: "cover",
+                borderRadius: "93% 7% 93% 7% / 8% 95% 5% 92%  "
+              }}
             />
           </div>
         ))}
@@ -91,7 +94,7 @@ const Carousel = () => {
       {/* Next Slide Button */}
       <button
         onClick={() => handleButtonClick(nextSlide)}
-        className={`absolute top-1/2 right-8 active:scale-75  -translate-y-1/2 bg-white/50 dark:bg-gray-800/50 p-2 rounded-full focus:outline-none hover:bg-gray-200 dark:hover:bg-gray-700 transform transition-transform duration-300 ease-out `}
+        className={`absolute top-1/2 right-8 active:scale-75  -translate-y-1/2 bg-white/50  p-2 rounded-full focus:outline-none hover:bg-gray-200  transform transition-transform duration-300 ease-out `}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -120,7 +123,7 @@ const Carousel = () => {
           />
         ))}
       </div>
-    </div>
+    </header>
   );
 };
 
