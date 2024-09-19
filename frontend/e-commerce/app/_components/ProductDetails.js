@@ -9,6 +9,10 @@ import { toast } from "sonner";
 import ProductDescriptionAccordion from "./ProductDescriptionAccordion";
 import Breadcrumb from "./Breadcrumb"; // Import the Breadcrumb component
 import Link from "next/link";
+import SimilarProducts from "./SimilarProducts";
+import Stock from "./Stock";
+import PriceAndDiscount from "./PriceAndDiscount";
+import Rating from "./Rating";
 
 function ProductDetails({ product }) {
   if (!product) {
@@ -138,62 +142,12 @@ function ProductDetails({ product }) {
           <div className="divider divider-neutral mt-1"></div>
 
           {/* Price and Stock */}
-          <div className="flex flex-row justify-start items-center mb-4">
-            <span
-              className={`font-[600] ${
-                product.price !== product.finalPrice ? "mr-2" : ""
-              }`}
-            >
-              {`${product.finalPrice.toLocaleString()} EGP`}
-            </span>
-            {product.price !== product.finalPrice && (
-              <span className="line-through inline-block text-md !text-opacity-80 text-gray-500">
-                {`${product.price.toLocaleString()} `}
-              </span>
-            )}
-          </div>
+          <PriceAndDiscount product={product} className={"mb-4"} />
 
-          <div className="text-sm font-light mb-2">
-            {product.stock > 10 ? (
-              <div className="flex items-center ">
-                <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
-                <span>In Stock</span>
-              </div>
-            ) : product.stock > 0 && product.stock <= 10 ? (
-              <div className="flex items-center ">
-                <div className="w-2 h-2 rounded-full bg-orange-300 mr-2"></div>
-                <span>Only {product.stock} left</span>
-              </div>
-            ) : (
-              <div className="flex items-center ">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-500 mr-2"></div>
-                <span>Out of Stock</span>
-              </div>
-            )}
+          <Stock product={product} className={"font-light text-xs mb-1"} />
+          <div className="flex items-center justify-start mb-4">
+            <Rating product={product} size={"1.5rem"} />
           </div>
-
-          {/* Ratings */}
-          <div className="flex mb-4 flex-row items-center">
-            {product.ratingsQuantity !== 0 ? (
-              <>
-                <RatingStatic rating={product.ratingsAverage} />
-                <p className="ml-2 inline-block text-sm font-semibold">
-                  ({product.ratingsAverage}){" "}
-                  {product.ratingsQuantity === 1
-                    ? `${product.ratingsQuantity} Rating`
-                    : `${product.ratingsQuantity} Ratings`}
-                </p>
-              </>
-            ) : (
-              <>
-                <RatingStatic rating={0} size="1.6rem" />
-                <p className="ml-2 inline-block text-sm font-semibold">
-                  No Ratings Yet
-                </p>
-              </>
-            )}
-          </div>
-
           {/* Quantity Selector */}
           <div className="flex flex-row items-center justify-between mb-4">
             <h3 className="text-sm self-center font-semibold">Quantity:</h3>
@@ -256,6 +210,7 @@ function ProductDetails({ product }) {
       <div className="mx-auto mt-5 shadow-lg">
         <ProductDescriptionAccordion description={product.description} />
       </div>
+      <SimilarProducts category={product.mainCategory} />
     </div>
   );
 }

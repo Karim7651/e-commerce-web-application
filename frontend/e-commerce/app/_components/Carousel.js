@@ -7,6 +7,7 @@ const images = [
   { src: `${process.env.NEXT_PUBLIC_GALLERY}/1.webp`, alt: "Image 1" },
   { src: `${process.env.NEXT_PUBLIC_GALLERY}/2.webp`, alt: "Image 2" },
   { src: `${process.env.NEXT_PUBLIC_GALLERY}/3.webp`, alt: "Image 3" },
+  { src: `${process.env.NEXT_PUBLIC_GALLERY}/4.webp`, alt: "Image 4" },
 ];
 
 const Carousel = () => {

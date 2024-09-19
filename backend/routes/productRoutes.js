@@ -9,13 +9,14 @@ import {
   getAllProductsUser,
   getProduct,
   updateProduct,
+  getRandomProductsFromSameCategory,
 } from "../controllers/productController.js";
 import { createReview } from "../controllers/reviewController.js";
 
 const router = express.Router();
 
 router.use("/:productId/reviews", reviewRouter);
-
+router.route("/from-category").post(getRandomProductsFromSameCategory);
 router
   .route("/")
   .get(getAllProductsUser)

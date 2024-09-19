@@ -101,3 +101,43 @@ export const getAllProductsUser = catchAsync(async (req, res) => {
 export const getProduct = getOne(Product, { path: "reviews" });
 
 export const updateProduct = catchAsync(async (req, res, next) => {});
+
+export const getRandomProductsFromSameCategory = async (req, res) => {
+  try {
+    const { mainCategory, excludedProductId } = req.body;
+
+    // Validate if the required data is provided
+    if (!mainCategory || !excludedProductId) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'mainCategory and excludedProductId are required',
+      });
+    }
+
+    // Use aggregation to match the category, exclude the current product, and get 3 random products
+    const randomProducts = await Product.aggregate([
+      {
+        $match: {
+          _id: { $ne: mongoose.Types.ObjectId(excludedProductId) }, // Exclude the product by its ID
+          mainCategory: mainCategory, // Match the provided mainCategory
+        },
+      },
+      {
+        $sample: { size: 3 }, // Randomly sample 3 products
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      results: randomProducts.length,
+      data: {
+        products: randomProducts,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
