@@ -44,7 +44,7 @@ const Carousel = () => {
   };
 
   return (
-    <header className="relative mt-20">
+    <header className="relative mt-20 overflow-hidden">
       {/* Carousel Slides */}
       <div
         className="relative flex transition-transform duration-700 ease-in-out"

@@ -1,13 +1,12 @@
 "use client";
 import Image from "next/image";
 import { useState, useRef } from "react";
-import RatingStatic from "./RatingStatic";
 import Truck from "tabler-icons-react/dist/icons/truck";
 import Package from "tabler-icons-react/dist/icons/package";
 import ShoppingCartPlus from "tabler-icons-react/dist/icons/shopping-cart-plus";
 import { toast } from "sonner";
 import ProductDescriptionAccordion from "./ProductDescriptionAccordion";
-import Breadcrumb from "./Breadcrumb"; // Import the Breadcrumb component
+import Breadcrumb from "./Breadcrumb";
 import Link from "next/link";
 import SimilarProducts from "./SimilarProducts";
 import Stock from "./Stock";
@@ -206,11 +205,10 @@ function ProductDetails({ product }) {
         </div>
       </div>
 
-      {/* Product Description */}
       <div className="mx-auto mt-5 shadow-lg">
         <ProductDescriptionAccordion description={product.description} />
       </div>
-      <SimilarProducts category={product.mainCategory} />
+      
     </div>
   );
 }

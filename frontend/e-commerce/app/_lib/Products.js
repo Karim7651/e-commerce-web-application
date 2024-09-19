@@ -12,6 +12,31 @@ export const getProducts = async (filters = {}) => {
     console.log(err);
   }
 };
+export const getSimilarProducts = async (filters = {}) => {
+  const { subCategories = [], excludedProductId, limit = 3 } = filters;
+  const productsEndPoint = `${process.env.NEXT_PUBLIC_API}/products/from-category`;
+
+  // Ensure subCategories is an array and join them
+  const subCategoriesString = Array.isArray(subCategories) ? subCategories.join(",") : "";
+
+  const queryParams = new URLSearchParams({
+    subCategories: subCategoriesString,
+    excludedProductId,
+    limit,
+  }).toString();
+  try {
+    const response = await fetch(`${productsEndPoint}?${queryParams}`, {
+      next: { revalidate: 10 },
+    });
+    const productsData = await response.json();
+    return productsData.data.products;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+};
+
+
 export const getProductDetails = async (productId) => {
   const productEndPoint = `${process.env.NEXT_PUBLIC_API}/products/${productId}`;
   try {

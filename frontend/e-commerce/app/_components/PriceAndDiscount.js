@@ -3,7 +3,7 @@ function PriceAndDiscount({ product, className }) {
     <div className={`flex flex-row justify-start items-center ${className}`}>
 
       {/* Currency first */}
-      <span className="font-extralight text-base-content text-[0.6rem] relative top-[-4px] mr-[2px]">
+      <span className="font-light text-base-content text-[0.6rem] relative top-[-4px] mr-[2px]">
         EGP
       </span>
 

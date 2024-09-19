@@ -2,6 +2,10 @@ import AppError from "../utils/appError.js";
 const handleCastErrorDB = (err) => {
   //path => field
   //value => input value
+  if(err.kind === "ObjectId"){
+    const message = `Invalid ${err.path}: ${err.value}. Please provide a valid MongoDB ObjectId.`;
+    return new AppError(message, 400);
+  }
   const message = `Invalid ${err.path}: ${err.value}.`;
   return new AppError(message, 400);
 };
@@ -70,7 +74,9 @@ function globalErrorHandler(err, req, res, next) {
     //don't override error
     let error = { ...err };
     error.message = err.message;
-    if (error.name === "CastError") error = handleCastErrorDB(error);
+    if (error.name === 'CastError' || (error.kind && error.kind === 'ObjectId')) {
+      error = handleCastErrorDB(error);
+    }
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === "ValidationError")
       error = handleValidationErrorDB(error);

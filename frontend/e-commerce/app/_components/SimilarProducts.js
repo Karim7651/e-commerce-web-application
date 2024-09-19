@@ -1,6 +1,6 @@
-import ProductListWithSuspense from "./ProductListWithSuspense";
+import SimilarProductsList from "./SimilarProductsList";
 
-function SimlarProducts(props) {
+function SimilarProducts({ category = [], excludedProductId }) {
   return (
     <div className="relative w-12/12 mx-auto mb-20">
       {/* Header */}
@@ -9,11 +9,17 @@ function SimlarProducts(props) {
       </div>
 
       {/* Bordered div with products */}
-      <div className="border-b-[0.03rem] border-r-[0.03rem] border-l-[0.03rem]  border-neutral-600  border-opacity-30  rounded-b-lg p-4 ">
-        <ProductListWithSuspense filters={{ limit: 3,mainCategory:props.category }} />
+      <div className="border-b-[0.03rem] border-r-[0.03rem] border-l-[0.03rem] border-neutral-600 border-opacity-30 rounded-b-lg p-4">
+        <SimilarProductsList
+          filters={{
+            limit: 3,
+            subCategories: Array.isArray(category) ? category : [], // Ensure it's an array
+            excludedProductId
+          }}
+        />
       </div>
     </div>
   );
 }
 
-export default SimlarProducts;
+export default SimilarProducts;

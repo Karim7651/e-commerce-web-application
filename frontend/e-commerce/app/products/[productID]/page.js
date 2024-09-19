@@ -1,11 +1,14 @@
 import ProductDetails from "@/app/_components/ProductDetails";
 import { getProductDetails } from "@/app/_lib/Products";
-
+import dynamic from "next/dynamic";
+const SimilarProducts = dynamic(() => import('../../_components/SimilarProducts'), {
+  loading: () => <p>Loading similar products...</p>,
+});
 export async function generateMetadata({ params }) {
   const { productID } = params;
   const product = await getProductDetails(productID);
-  if(!product){
-    return 
+  if (!product) {
+    return;
   }
   return {
     title: product.name,
@@ -25,9 +28,15 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { productID } = params;
-
-  // Fetch product details for props
   const product = await getProductDetails(productID);
 
-  return <ProductDetails product={product} />;
+  return (
+    <>
+      <ProductDetails product={product} />
+      <SimilarProducts
+        category={product.subCategories}
+        excludedProductId={product._id}
+      />
+    </>
+  );
 }

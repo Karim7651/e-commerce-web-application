@@ -10,13 +10,15 @@ import {
   getProduct,
   updateProduct,
   getRandomProductsFromSameCategory,
+  convertDescriptionToArray,
 } from "../controllers/productController.js";
 import { createReview } from "../controllers/reviewController.js";
 
 const router = express.Router();
 
 router.use("/:productId/reviews", reviewRouter);
-router.route("/from-category").post(getRandomProductsFromSameCategory);
+router.route("/from-category").get(getRandomProductsFromSameCategory);
+
 router
   .route("/")
   .get(getAllProductsUser)
@@ -24,6 +26,7 @@ router
     protect,
     restrictTo("admin", "seller"),
     uploadProductImages,
+    convertDescriptionToArray,
     resizeProductImages,
     createProduct
   );

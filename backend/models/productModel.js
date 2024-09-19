@@ -106,6 +106,7 @@ const productSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+productSchema.index({ subCategories: 1 });
 productSchema.index({ price: 1, ratingsAverage: -1 });
 productSchema.index({ slug: 1 });
 //virtual populate

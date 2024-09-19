@@ -5,7 +5,7 @@ import sharp from "sharp";
 import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
 import APIFeatures from "../utils/apiFeatures.js";
-
+import mongoose from "mongoose";
 // const multerStorage = multer.diskStorage({
 //   destination: (req, file, cb) => {
 //     cb(null, "public/img/productsMain"); //cb => next
@@ -77,6 +77,15 @@ export const uploadProductImages = upload.fields([
   { name: "imageCover", maxCount: 1 },
   { name: "images", maxCount: 3 },
 ]);
+
+export const convertDescriptionToArray = (req, res, next) => {
+  if (req.body.description && typeof req.body.description === 'string') {
+    // Convert the description into an array
+    req.body.description = req.body.description.split(',').map(item => item.trim());
+  }
+  console.log(req.body)
+  next();
+};
 export const createProduct = createOne(Product);
 
 export const getAllProductsUser = catchAsync(async (req, res) => {
@@ -104,39 +113,56 @@ export const updateProduct = catchAsync(async (req, res, next) => {});
 
 export const getRandomProductsFromSameCategory = async (req, res) => {
   try {
-    const { mainCategory, excludedProductId } = req.body;
+    const { subCategories, excludedProductId, limit } = req.query;
 
-    // Validate if the required data is provided
-    if (!mainCategory || !excludedProductId) {
+    if (!subCategories || !excludedProductId) {
       return res.status(400).json({
-        status: 'fail',
-        message: 'mainCategory and excludedProductId are required',
+        status: "fail",
+        message: "subCategories and excludedProductId are required",
       });
     }
 
-    // Use aggregation to match the category, exclude the current product, and get 3 random products
+    if (!mongoose.Types.ObjectId.isValid(excludedProductId)) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid excludedProductId",
+      });
+    }
+
+    const categoriesArray = Array.isArray(subCategories)
+      ? subCategories
+      : subCategories.split(",");
+
+    const validLimit = parseInt(limit, 10);
+    const size = isNaN(validLimit) || validLimit <= 0 ? 3 : validLimit;
+
     const randomProducts = await Product.aggregate([
       {
         $match: {
-          _id: { $ne: mongoose.Types.ObjectId(excludedProductId) }, // Exclude the product by its ID
-          mainCategory: mainCategory, // Match the provided mainCategory
+          _id: { $ne: new mongoose.Types.ObjectId(excludedProductId) },
+          subCategories: { $in: categoriesArray },
         },
       },
       {
-        $sample: { size: 3 }, // Randomly sample 3 products
+        $sample: { size },
       },
     ]);
 
+    // Manually apply `toObject` or `toJSON` to include virtuals
+    const productsWithVirtuals = randomProducts.map(product =>
+      new Product(product).toObject({ virtuals: true })
+    );
+
     res.status(200).json({
-      status: 'success',
-      results: randomProducts.length,
+      status: "success",
+      results: productsWithVirtuals.length,
       data: {
-        products: randomProducts,
+        products: productsWithVirtuals,
       },
     });
   } catch (err) {
     res.status(500).json({
-      status: 'error',
+      status: "error",
       message: err.message,
     });
   }
