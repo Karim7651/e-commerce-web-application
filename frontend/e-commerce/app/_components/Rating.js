@@ -4,7 +4,7 @@ function Rating({product,size}) {
     <div className="flex mb-3 flex-row justify-center items-center">
       {product.ratingsQuantity != 0 && <RatingStatic rating={product.ratingsAverage} size={size} />}
       {product.ratingsQuantity != 0 && (
-        <p className="ml-2 inline-block text-xs font-light">
+        <p className="ml-2  text-xs font-extralight mt-1">
           ({product.ratingsAverage}){" "}
           {product.ratingsQuantity === 1
             ? `${product.ratingsQuantity} Rating`
@@ -13,7 +13,7 @@ function Rating({product,size}) {
       )}
       {product.ratingsQuantity == 0 && <RatingStatic rating={0} size={size} />}
       {product.ratingsQuantity == 0 && (
-        <p className="ml-2 inline-block text-xs font-light">No Ratings Yet</p>
+        <p className="ml-2  text-xs font-extralight mt-1">No Ratings Yet</p>
       )}
     </div>
   );

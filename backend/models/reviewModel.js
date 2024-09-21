@@ -6,6 +6,10 @@ const reviewSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    title: {
+      type: String,
+      trim: true,
+    },
     rating: {
       type: Number,
       min: 1,
@@ -37,7 +41,7 @@ const reviewSchema = new mongoose.Schema(
 //unique product user review combination
 reviewSchema.index({ product: 1, user: 1 }, { unique: true });
 
-reviewSchema.pre("/^find/", function (next) {
+reviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: "user",
     select: "name",
@@ -83,7 +87,7 @@ reviewSchema.statics.calcAverageRatings = async function (productId) {
 reviewSchema.pre(/^findOneAnd/, async function (next) {
   //in pre middlewares this referes to query object
   //used this.r to pass data from pre middleware to post middleware
-  this.r = await this.model.findOne(this.getFilter()); 
+  this.r = await this.model.findOne(this.getFilter());
   next();
 });
 

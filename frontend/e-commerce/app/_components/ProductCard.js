@@ -20,7 +20,7 @@ function ProductCard({ product }) {
         prevIndex === 0 ? allImages.length - 1 : prevIndex - 1
       );
       setIsFading(false);
-    }, 300); // Match this duration with the Tailwind transition duration
+    }, 300);
   };
 
   const handleNext = () => {
@@ -30,7 +30,7 @@ function ProductCard({ product }) {
         prevIndex === allImages.length - 1 ? 0 : prevIndex + 1
       );
       setIsFading(false);
-    }, 300); // Match this duration with the Tailwind transition duration
+    }, 300);
   };
 
   return (
@@ -45,17 +45,16 @@ function ProductCard({ product }) {
             className={`transition-opacity duration-500 ease-in-out rounded-sm ${
               isFading ? "opacity-0" : "opacity-100"
             }`}
-            onLoad={() => setIsFading(false)} // Ensure fading is removed after loading
+            onLoad={() => setIsFading(false)}
           />
         </Link>
       </figure>
-
-      <div className="card-body p-5">
+      <div className="card-body p-5 pt-3">
         {allImages.length > 1 && (
-          <div className="flex flex-col items-center mt-4">
+          <div className="flex flex-col items-center ">
             <div className="flex items-center space-x-2 mb-2">
               <button
-                className="p-2 bg-gray-300 rounded-full"
+                className="p-2 bg-gray-300 rounded-full transform transition-transform duration-200 hover:scale-110 active:scale-90 hover:bg-gray-400"
                 onClick={handlePrev}
                 aria-label="Previous image"
               >
@@ -65,7 +64,7 @@ function ProductCard({ product }) {
                   viewBox="0 0 24 24"
                   strokeWidth="2"
                   stroke="currentColor"
-                  className="w-4 h-4 text-gray-800"
+                  className="w-3 h-3 text-gray-800"
                 >
                   <path
                     strokeLinecap="round"
@@ -79,21 +78,21 @@ function ProductCard({ product }) {
                   <button
                     key={index}
                     className={`w-2 h-2 rounded-full ${
-                      index === currentIndex ? "bg-gray-500" : "bg-gray-300"
+                      index === currentIndex ? "bg-gray-300" : "bg-gray-500"
                     }`}
                     onClick={() => {
                       setIsFading(true);
                       setTimeout(() => {
                         setCurrentIndex(index);
                         setIsFading(false);
-                      }, 300); // Match this duration with the Tailwind transition duration
+                      }, 300);
                     }}
                     aria-label={`Show image ${index + 1}`}
                   />
                 ))}
               </div>
               <button
-                className="p-2 bg-gray-300 rounded-full"
+                className="p-2 bg-gray-300 rounded-full transform transition-transform duration-200 hover:scale-110 active:scale-90 hover:bg-gray-400"
                 onClick={handleNext}
                 aria-label="Next image"
               >
@@ -103,7 +102,7 @@ function ProductCard({ product }) {
                   viewBox="0 0 24 24"
                   strokeWidth="2"
                   stroke="currentColor"
-                  className="w-4 h-4 text-gray-800"
+                  className="w-3 h-3 text-gray-800"
                 >
                   <path
                     strokeLinecap="round"
@@ -123,8 +122,11 @@ function ProductCard({ product }) {
         <Rating product={product} size={"1.2rem"} />
 
         <div className="card-actions justify-center">
-          <button className="btn btn-outline w-full flex items-center justify-center">
-            <ShoppingCartPlus className="mr-1" /> Add to cart
+          <button
+            className="flex w-full items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95"
+          >
+            <ShoppingCartPlus className="mr-2" size={30} />
+            Add to Cart
           </button>
         </div>
       </div>

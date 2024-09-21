@@ -119,7 +119,7 @@ const Carousel = () => {
               resetInterval(); // Reset interval on indicator click
             }}
             className={`w-4 h-1.5 rounded-full cursor-pointer ${
-              index === activeIndex ? "bg-gray-500" : "bg-gray-300"
+              index === activeIndex ? "bg-gray-300" : "bg-gray-500"
             }`}
           />
         ))}

@@ -1,6 +1,6 @@
 function ProductDescriptionAccordion({ description }) {
   return (
-    <div className="flex justify-center mb-10 mt-5 ">
+    <div className="flex justify-center  mt-5 ">
       <div className="join join-vertical xs:w-[100%] ">
         <div className="collapse collapse-arrow join-item border-[0.05rem] border-neutral-600 rounded-md !px-0">
           <input type="checkbox" name="product-description-accordion !px-0" />

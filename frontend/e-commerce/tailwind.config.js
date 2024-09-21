@@ -55,7 +55,8 @@ module.exports = {
           'base-200': '#ffffff',
           'base-300':'#000000',
           'base-content':'#111111',
-          'skeleton-color' : '#ffffff',
+
+
         },
         dark: {
           ...daisyuiThemes.dark,
@@ -64,7 +65,7 @@ module.exports = {
           'base-200': '#2e2e2e',
           'base-300':'#000000',
           'base-content':'#ffffff',
-          'skeleton-color' : '#ffffff',
+
         },
       },
     ],

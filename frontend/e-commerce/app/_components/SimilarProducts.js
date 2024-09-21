@@ -2,7 +2,7 @@ import SimilarProductsList from "./SimilarProductsList";
 
 function SimilarProducts({ category = [], excludedProductId }) {
   return (
-    <div className="relative w-12/12 mx-auto mb-20">
+    <div className="relative w-[97.5%] mx-auto mb-20">
       {/* Header */}
       <div className="flex justify-between items-center bg-base-200 text-base-content p-4 rounded-t-lg">
         <h2 className="text-lg font-semibold">Similar Products</h2>

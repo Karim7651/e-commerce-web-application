@@ -8,12 +8,40 @@ import { toast } from "sonner";
 import ProductDescriptionAccordion from "./ProductDescriptionAccordion";
 import Breadcrumb from "./Breadcrumb";
 import Link from "next/link";
-import SimilarProducts from "./SimilarProducts";
 import Stock from "./Stock";
 import PriceAndDiscount from "./PriceAndDiscount";
 import Rating from "./Rating";
+import ReviewContainer from "./ReviewContainer";
 
 function ProductDetails({ product }) {
+  // Sample reviews array
+  const reviews = [
+    {
+      name: "John Doe",
+      rating: 5,
+      title: "Amazing product!",
+      review: "I absolutely loved this product. It exceeded all my expectations!",
+    },
+    {
+      name: "Jane Smith",
+      rating: 4,
+      title: "Good but not great",
+      review: "The product is decent, but there are a few things that could be improved.",
+    },
+    {
+      name: "Michael Johnson",
+      rating: 3,
+      title: "Average",
+      review: "It's okay. Not too bad but definitely could be better.",
+    },
+    {
+      name: "Alice Brown",
+      rating: 5,
+      title: "Highly recommend!",
+      review: "This product is fantastic! I'll be buying more in the future.",
+    },
+  ];
+  const reviews2 =[]
   if (!product) {
     return <div>No product</div>;
   }
@@ -208,7 +236,7 @@ function ProductDetails({ product }) {
       <div className="mx-auto mt-5 shadow-lg">
         <ProductDescriptionAccordion description={product.description} />
       </div>
-      
+      <ReviewContainer reviews={product.reviews}/>
     </div>
   );
 }
