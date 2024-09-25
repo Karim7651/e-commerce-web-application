@@ -6,10 +6,11 @@ import { useUser } from "../_contexts/userContext";
 import CredentialsModal from "./CredentialsModal";
 import ThemeSwitch from "./ThemeSwitch";
 import Link from "next/link";
-import Search from "tabler-icons-react/dist/icons/search";
 import HomeIcon from "tabler-icons-react/dist/icons/home";
 import InfoCircleIcon from "tabler-icons-react/dist/icons/info-circle";
 import QuestionMarkIcon from "tabler-icons-react/dist/icons/question-mark";
+import Menu from "tabler-icons-react/dist/icons/menu-2";
+import ShoppingBag from "tabler-icons-react/dist/icons/shopping-bag";
 import SearchBar from "./SearchBar";
 export default function Navbar() {
   const pathname = usePathname();
@@ -50,75 +51,70 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-base-200 shadow-md relative flex flex-row justify-between py-1 px-2 ">
+    <nav className="bg-base-200 shadow-md relative flex flex-row justify-between px-2 ">
       {/* Navbar Start */}
-      <div className="w-auto">
+      <div className="flex items-center justify-center">
         {/* Mobile Menu Button */}
         <div
           tabIndex={0}
           role="button"
-          className="btn btn-ghost lg:hidden"
+          className="btn btn-ghost px-1 py-1"
           id="hamburger"
           onClick={toggleDropdown}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h8m-8 6h16"
-            />
-          </svg>
+          <Menu size={30} />
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Dropdown Menu */}
         <ul
           ref={menuRef}
           tabIndex={0}
-          className={`menu menu-xs dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow ${
+          className={`menu menu-xs dropdown-content bg-base-200 rounded-md z-[1] mt-3 ml-3 w-52 p-2 shadow-sm ${
             isOpen ? "block" : "hidden"
           }`}
           style={{ position: "absolute", top: "100%", left: "0" }}
         >
           <Link
             href="/"
-            className="flex flex-row items-center p-2 hover:bg-neutral-600 hover:bg-opacity-50"
+            className="relative flex flex-row items-center p-2 group overflow-hidden"
             onClick={handleLinkClick}
           >
             <HomeIcon size={20} />
             <span className="text-md font-bold ml-4">Homepage</span>
+            <span className="absolute inset-0 rounded-md bg-neutral-600 bg-opacity-50 scale-x-0 origin-center transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
           </Link>
+
           <Link
             href="/about"
-            className="flex flex-row items-center p-2 hover:bg-neutral-600 hover:bg-opacity-50"
+            className="relative flex flex-row items-center p-2 group overflow-hidden"
             onClick={handleLinkClick}
           >
             <InfoCircleIcon size={20} />
             <span className="text-md font-bold ml-4">About</span>
+            <span className="absolute inset-0 rounded-md bg-neutral-600 bg-opacity-50 scale-x-0 origin-center transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
           </Link>
+
           <Link
             href="/faq"
-            className="flex flex-row items-center p-2 hover:bg-neutral-600 hover:bg-opacity-50"
+            className="relative flex flex-row items-center p-2 group overflow-hidden"
             onClick={handleLinkClick}
           >
             <QuestionMarkIcon size={20} />
             <span className="text-md font-bold ml-4">FAQ</span>
+            <span className="absolute inset-0 rounded-md bg-neutral-600 bg-opacity-50 scale-x-0 origin-center transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
           </Link>
         </ul>
 
         {/* Brand Name */}
-        <Link href="/" className="btn btn-ghost hover:bg-transparent text-xl">
+        <Link href="/" className="btn btn-ghost hover:bg-transparent text-base">
           E-Commerce
         </Link>
       </div>
 
       {/* Navbar Center */}
+      <div className="navbar-center flex items-center justify-center">
+        <SearchBar />
+      </div>
       {/* <div className="navbar-center hidden lg:flex">
         <ul className="flex flex-row px-1 gap-4 justify-center items-center">
           <li>
@@ -190,26 +186,16 @@ export default function Navbar() {
             />
           </div>
         </div>*/}
-        <SearchBar />
         {/* Cart Icon */}
         <div className="dropdown dropdown-end">
-          <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+          <div
+            tabIndex={0}
+            role="button"
+            className="btn btn-ghost btn-circle px-1 py-1"
+          >
             <div className="indicator">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-              <span className="badge badge-sm bg-green-500 indicator-item text-black">
+              <ShoppingBag className="h-6 w-6 stroke-2" />
+              <span className="badge badge-md h-4 w-4 rounded-full  bg-emerald-400 indicator-item text-black right-[-1px]">
                 8
               </span>
             </div>

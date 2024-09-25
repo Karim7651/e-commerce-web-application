@@ -1,7 +1,7 @@
 import RatingStatic from "./RatingStatic";
-function Rating({product,size}) {
+function Rating({product,size,className}) {
   return (
-    <div className="flex mb-3 flex-row justify-center items-center">
+    <div className={`flex mb-3 flex-row items-center  ${className}`}>
       {product.ratingsQuantity != 0 && <RatingStatic rating={product.ratingsAverage} size={size} />}
       {product.ratingsQuantity != 0 && (
         <p className="ml-2  text-xs font-extralight mt-1">

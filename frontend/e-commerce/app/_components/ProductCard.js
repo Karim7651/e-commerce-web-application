@@ -64,7 +64,7 @@ function ProductCard({ product }) {
                   viewBox="0 0 24 24"
                   strokeWidth="2"
                   stroke="currentColor"
-                  className="w-3 h-3 text-gray-800"
+                  className="w-2 h-2 text-gray-800"
                 >
                   <path
                     strokeLinecap="round"
@@ -102,7 +102,7 @@ function ProductCard({ product }) {
                   viewBox="0 0 24 24"
                   strokeWidth="2"
                   stroke="currentColor"
-                  className="w-3 h-3 text-gray-800"
+                  className="w-2 h-2 text-gray-800"
                 >
                   <path
                     strokeLinecap="round"
