@@ -15,33 +15,33 @@ import ReviewContainer from "./ReviewContainer";
 
 function ProductDetails({ product }) {
   // Sample reviews array
-  const reviews = [
-    {
-      name: "John Doe",
-      rating: 5,
-      title: "Amazing product!",
-      review: "I absolutely loved this product. It exceeded all my expectations!",
-    },
-    {
-      name: "Jane Smith",
-      rating: 4,
-      title: "Good but not great",
-      review: "The product is decent, but there are a few things that could be improved.",
-    },
-    {
-      name: "Michael Johnson",
-      rating: 3,
-      title: "Average",
-      review: "It's okay. Not too bad but definitely could be better.",
-    },
-    {
-      name: "Alice Brown",
-      rating: 5,
-      title: "Highly recommend!",
-      review: "This product is fantastic! I'll be buying more in the future.",
-    },
-  ];
-  const reviews2 =[]
+  // const reviews = [
+  //   {
+  //     name: "John Doe",
+  //     rating: 5,
+  //     title: "Amazing product!",
+  //     review: "I absolutely loved this product. It exceeded all my expectations!",
+  //   },
+  //   {
+  //     name: "Jane Smith",
+  //     rating: 4,
+  //     title: "Good but not great",
+  //     review: "The product is decent, but there are a few things that could be improved.",
+  //   },
+  //   {
+  //     name: "Michael Johnson",
+  //     rating: 3,
+  //     title: "Average",
+  //     review: "It's okay. Not too bad but definitely could be better.",
+  //   },
+  //   {
+  //     name: "Alice Brown",
+  //     rating: 5,
+  //     title: "Highly recommend!",
+  //     review: "This product is fantastic! I'll be buying more in the future.",
+  //   },
+  // ];
+  const reviews2 = [];
   if (!product) {
     return <div>No product</div>;
   }
@@ -107,10 +107,20 @@ function ProductDetails({ product }) {
     { label: "Home", url: "/" },
     {
       label: product.mainCategory,
-      url: `/categoryName=${product.mainCategory}`,
+      url: `/search?mainCategory=${product.mainCategory}`,
     },
-    { label: product.name },
   ];
+
+  // Check if there are any subCategories
+  if (product.subCategories && product.subCategories.length > 0) {
+    // Assuming you want to use the first subCategory
+    breadcrumbItems.push({
+      label: product.subCategories[0], // Adjust this if you want to use a different subCategory
+      url: `/search?subCategories=${product.subCategories[0]}`,
+    });
+  }
+
+  breadcrumbItems.push({ label: product.name });
 
   return (
     <div className="mx-auto py-5 px-4 ">
@@ -160,7 +170,7 @@ function ProductDetails({ product }) {
           <h2 className="text-2xl font-bold mb-3">{product.name}</h2>
           {/* <p className="font-extralight">{product.mainCategory}</p> */}
           <Link
-            href={`/categoryName=${product.mainCategory}`}
+            href={`/search?mainCategory=${product.mainCategory}`}
             className="font-light"
           >
             {product.mainCategory.charAt(0).toUpperCase() +
@@ -173,7 +183,7 @@ function ProductDetails({ product }) {
 
           <Stock product={product} className={"font-light text-xs mb-1"} />
           <div className="flex items-center justify-start mb-4">
-            <Rating product={product} size={"1.5rem"} />
+            <Rating product={product} size={"1.5rem"} className="justify-center items-center" />
           </div>
           {/* Quantity Selector */}
           <div className="flex flex-row items-center justify-between mb-4">
@@ -236,7 +246,7 @@ function ProductDetails({ product }) {
       <div className="mx-auto mt-5 shadow-lg">
         <ProductDescriptionAccordion description={product.description} />
       </div>
-      <ReviewContainer reviews={product.reviews}/>
+      <ReviewContainer reviews={product.reviews} />
     </div>
   );
 }

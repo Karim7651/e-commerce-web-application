@@ -13,6 +13,10 @@ function ProductCard({ product }) {
   const { _id, name, imageCover, images } = product;
   const allImages = [imageCover, ...images];
 
+  const truncateName = (name) => {
+    return name.length > 20 ? name.slice(0, 20) + "..." : name;
+  };
+
   const handlePrev = () => {
     setIsFading(true);
     setTimeout(() => {
@@ -114,17 +118,29 @@ function ProductCard({ product }) {
             </div>
           </div>
         )}
-        <Link href={`/products/${_id}`}>
-          <h2 className="font-bold text-md primary-content">{name}</h2>
-        </Link>
+        <div className="relative group">
+          <Link href={`/products/${_id}`}>
+            <h2
+              className="font-bold text-md primary-content"
+              aria-hidden="true"
+            >
+              {truncateName(name)}
+            </h2>
+          </Link>
+          <span
+            className="absolute font-bold bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-neutral-600 bg-opacity-70 backdrop-blur-xs  text-white text-xs rounded px-2 py-1 z-10 whitespace-nowrap"
+            aria-hidden="false"
+          >
+            {name}
+          </span>
+        </div>
+
         <PriceAndDiscount product={product} />
         <Stock product={product} className="font-light text-xs" />
-        <Rating product={product} size={"1.2rem"} />
+        <Rating product={product} size={"1.2rem"} className="justify-center items-center" />
 
         <div className="card-actions justify-center">
-          <button
-            className="flex w-full items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95"
-          >
+          <button className="flex w-full items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95">
             <ShoppingCartPlus className="mr-2" size={30} />
             Add to Cart
           </button>

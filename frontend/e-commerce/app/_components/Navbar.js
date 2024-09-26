@@ -69,7 +69,7 @@ export default function Navbar() {
         <ul
           ref={menuRef}
           tabIndex={0}
-          className={`menu menu-xs dropdown-content bg-base-200 rounded-md z-[1] mt-3 ml-3 w-52 p-2 shadow-sm ${
+          className={`menu menu-xs dropdown-content bg-base-200 rounded-sm z-[1] mt-3 ml-3 w-52 p-2 shadow-lg ${
             isOpen ? "block" : "hidden"
           }`}
           style={{ position: "absolute", top: "100%", left: "0" }}
@@ -79,9 +79,9 @@ export default function Navbar() {
             className="relative flex flex-row items-center p-2 group overflow-hidden"
             onClick={handleLinkClick}
           >
-            <HomeIcon size={20} />
+            <HomeIcon size={25} />
             <span className="text-md font-bold ml-4">Homepage</span>
-            <span className="absolute inset-0 rounded-md bg-neutral-600 bg-opacity-50 scale-x-0 origin-center transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+            <span className="absolute inset-0 rounded-md bg-neutral-600 bg-opacity-20 scale-x-0 origin-center transition-transform duration-300 ease-out group-hover:scale-x-100 -z-10"></span>
           </Link>
 
           <Link
@@ -89,9 +89,9 @@ export default function Navbar() {
             className="relative flex flex-row items-center p-2 group overflow-hidden"
             onClick={handleLinkClick}
           >
-            <InfoCircleIcon size={20} />
+            <InfoCircleIcon size={25} />
             <span className="text-md font-bold ml-4">About</span>
-            <span className="absolute inset-0 rounded-md bg-neutral-600 bg-opacity-50 scale-x-0 origin-center transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+            <span className="absolute inset-0 rounded-md bg-neutral-600 bg-opacity-20  scale-x-0 origin-center transition-transform duration-300 ease-out group-hover:scale-x-100 -z-10"></span>
           </Link>
 
           <Link
@@ -99,15 +99,15 @@ export default function Navbar() {
             className="relative flex flex-row items-center p-2 group overflow-hidden"
             onClick={handleLinkClick}
           >
-            <QuestionMarkIcon size={20} />
+            <QuestionMarkIcon size={25} />
             <span className="text-md font-bold ml-4">FAQ</span>
-            <span className="absolute inset-0 rounded-md bg-neutral-600 bg-opacity-50 scale-x-0 origin-center transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+            <span className="absolute inset-0 rounded-md bg-neutral-600 bg-opacity-20 scale-x-0 origin-center transition-transform duration-300 ease-out group-hover:scale-x-100 -z-10"></span>
           </Link>
         </ul>
 
         {/* Brand Name */}
         <Link href="/" className="btn btn-ghost hover:bg-transparent text-base">
-          E-Commerce
+          Kimmerce
         </Link>
       </div>
 

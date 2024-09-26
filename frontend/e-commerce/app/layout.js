@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 
 export const metadata = {
-  title: "E-Commerce",
+  title: "Kimmerce",
   description: "E-Commerce webapp created by Karim Atef",
   author: "Karim Atef",
   charset: "UTF-8",

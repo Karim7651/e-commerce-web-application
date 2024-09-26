@@ -4,7 +4,7 @@ import SearchResult from "./SearchResult";
 import Loading from "./Loading";
 import Link from "next/link";
 
-const DEBOUNCE_DELAY = 300;
+const DEBOUNCE_DELAY = 100;
 
 const SearchResults = ({ searchQuery, isFocused }) => {
   const [products, setProducts] = useState([]);
@@ -12,7 +12,7 @@ const SearchResults = ({ searchQuery, isFocused }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [noResults, setNoResults] = useState(false);
-  const [hasMore, setHasMore] = useState(false); // New state for more results
+  const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -88,9 +88,9 @@ const SearchResults = ({ searchQuery, isFocused }) => {
       </div>
     );
   } else if (noResults) {
-    content = <div className="p-4 text-center">No results found</div>; // Different message for no results
+    content = <div className="p-4 text-center ">No products found</div>; 
   } else if (products.length === 0) {
-    content = null; // Empty state when no search has been made yet
+    content = null;
   } else {
     content = (
       <>
@@ -104,9 +104,9 @@ const SearchResults = ({ searchQuery, isFocused }) => {
         ))}
 
         {hasMore && (
-          <Link href={`/search?query=${debouncedQuery}`}>
-            <div className="relative p-2 text-center group">
-              <span className="absolute inset-0 bg-base-100 bg-opacity-95 transition-transform transform scale-x-0 group-hover:scale-x-100 origin-center duration-300 ease-out"></span>
+          <Link href={`/search?search=${debouncedQuery}`}>
+            <div className="relative p-2 text-center ">
+              <span className="absolute inset-0 bg-base-100 bg-opacity-80 backdrop-blur-sm  transition-transform transform scale-x-0 group-hover:scale-x-100 origin-center duration-300 ease-out"></span>
               <span className="relative z-10 cursor-pointer text-base-content">
                 See more results...
               </span>
@@ -128,7 +128,7 @@ const SearchResults = ({ searchQuery, isFocused }) => {
             exit={{ scale: 0, opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
           >
-            <div className=" bg-base-100 bg-opacity-95  w-96 lg:w-full">{content}</div>
+            <div className=" bg-base-100 bg-opacity-80 backdrop-blur-sm  w-96 lg:w-full">{content}</div>
           </motion.div>
         </div>
       )}
