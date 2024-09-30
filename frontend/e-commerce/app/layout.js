@@ -6,6 +6,7 @@ import Navbar from "./_components/Navbar";
 import Footer from "./_components/Footer";
 import { Toaster } from "sonner";
 import { UserProvider } from "./_contexts/userContext";
+import { CartProvider } from "./_contexts/cartContext";
 
 // Define all the fonts
 const inter = Inter({ subsets: ["latin"] });
@@ -45,12 +46,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="dark">
       <body
-        className={`${inter.className} bg-base-700 grid grid-rows-[auto,1fr,auto] min-h-screen overflow-x-hidden bg-base-100 text-base-content`}
+        className={`${inter.className}  grid grid-rows-[auto,1fr,auto] min-h-screen overflow-x-hidden bg-base-100 text-base-content`}
       >
+        <Toaster richColors />
         <UserProvider>
+          <CartProvider>
           <Navbar />
           <main>{children}</main>
-          <Toaster richColors />
+          </CartProvider>
         </UserProvider>
         <Footer />
       </body>

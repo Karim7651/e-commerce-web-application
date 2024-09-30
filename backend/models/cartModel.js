@@ -1,4 +1,5 @@
 import { mongoose } from "mongoose";
+
 const cartSchema = new mongoose.Schema({
   products: [
     {
@@ -14,18 +15,28 @@ const cartSchema = new mongoose.Schema({
     },
   ],
 });
+
 cartSchema.set("toObject", { virtuals: true });
 cartSchema.set("toJSON", { virtuals: true });
-//virtual field for totalPrice calculated upon request
+
+
 cartSchema.virtual("totalPrice").get(function () {
   if (!this.populated("products.product")) {
     return 0;
   }
-  //array.reduce(callback(accumulator, currentValue), initialValue);
+  // array.reduce(callback(accumulator, currentValue), initialValue);
   return this.products.reduce((total, item) => {
     return total + item.product.price * item.quantity;
   }, 0);
 });
+
+// Virtual field for totalNumberOfItems calculated upon request
+cartSchema.virtual("totalNumberOfItems").get(function () {
+  return this.products.reduce((total, item) => {
+    return total + item.quantity;
+  }, 0);
+});
+
 
 cartSchema.pre(/^find/, function (next) {
   this.populate({

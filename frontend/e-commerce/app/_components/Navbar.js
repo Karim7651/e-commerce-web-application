@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import LogoutButton from "./LogoutButton";
-import { usePathname } from "next/navigation";
 import { useUser } from "../_contexts/userContext";
+import { useCart } from "../_contexts/cartContext";
 import CredentialsModal from "./CredentialsModal";
 import ThemeSwitch from "./ThemeSwitch";
 import Link from "next/link";
@@ -13,12 +13,12 @@ import Menu from "tabler-icons-react/dist/icons/menu-2";
 import ShoppingBag from "tabler-icons-react/dist/icons/shopping-bag";
 import SearchBar from "./SearchBar";
 export default function Navbar() {
-  const pathname = usePathname();
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
+  const { totalPrice, totalNumberOfItems } = useCart();
+  console.log(totalNumberOfItems)
 
-  // Toggle the dropdown menu
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
@@ -44,6 +44,7 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
 
   // Close the dropdown menu when a link is clicked
   const handleLinkClick = () => {
@@ -195,8 +196,8 @@ export default function Navbar() {
           >
             <div className="indicator">
               <ShoppingBag className="h-6 w-6 stroke-2" />
-              <span className="badge badge-md h-4 w-4 rounded-full  bg-emerald-400 indicator-item text-black right-[-1px]">
-                8
+              <span className="badge badge-md h-6 w-6 rounded-full bg-emerald-400 indicator-item text-black right-[-1px]">
+                {user?.cart?.totalNumberOfItems || totalNumberOfItems || 0}
               </span>
             </div>
           </div>
@@ -205,21 +206,20 @@ export default function Navbar() {
             className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow"
           >
             <div className="card-body">
-              <span className="text-lg font-bold ">8 Items</span>
-              <span className="text-info">Subtotal: $999</span>
+              <span className="text-lg font-bold">
+                {user?.cart?.products?.totalNumberOfItems || totalNumberOfItems || 0} Items
+              </span>
+              <span className="text-info">{`Total: $${
+                user?.cart?.totalPrice.toLocaleString() || totalPrice.toLocaleString() || 0
+              }`}</span>
               <div className="card-actions">
                 <button className="btn btn-primary btn-block">View cart</button>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Theme Switch */}
         <ThemeSwitch />
-
-        {/* Auth Buttons */}
         {!user && <CredentialsModal />}
-
         {user && <LogoutButton />}
       </div>
     </nav>

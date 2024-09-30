@@ -88,6 +88,7 @@ function ForgetPasswordModal({ token }) {
         const modal = document.getElementById("forgetModal");
         modal.close();
         router.push("/");
+        localStorage.setItem("isLoggedIn",true)
         toast.success("Password reset sucessful, you're now logged in");
         const data = await response.json()
         setUser(data.data.user)

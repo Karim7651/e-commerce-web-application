@@ -2,11 +2,12 @@
 import { useUser } from "../_contexts/userContext";
 import { useState } from "react"; // Corrected import for useState
 import Loading from "./Loading";
-import { Toaster,toast } from "sonner";
+import {toast } from "sonner";
+import {useCart} from "../_contexts/cartContext"
 export default function LogoutButton() {
   const { setUser } = useUser();
   const [isLoading, setIsLoading] = useState(false);
-
+  const {setCart} = useCart()
   const handleLogout = async () => {
     try {
       setIsLoading(true);
@@ -20,7 +21,13 @@ export default function LogoutButton() {
 
       if (response.ok) {
         console.log("Logged out successfully");
+        localStorage.removeItem("isLoggedIn")
         setUser(null);
+        setCart({
+          products: [],
+          totalPrice: 0,
+          totalNumberOfItems: 0,
+        });
         toast.success("Logged out sucessfully")
       } else {
         console.error("Failed to log out");

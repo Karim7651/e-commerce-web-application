@@ -6,12 +6,13 @@ import ShoppingCartPlus from "tabler-icons-react/dist/icons/shopping-cart-plus";
 import Stock from "./Stock";
 import PriceAndDiscount from "./PriceAndDiscount";
 import Rating from "./Rating";
-
+import { useCart } from "../_contexts/cartContext";
 function ProductCard({ product }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFading, setIsFading] = useState(false);
   const { _id, name, imageCover, images } = product;
   const allImages = [imageCover, ...images];
+  const { addToCart } = useCart();
 
   const truncateName = (name) => {
     return name.length > 20 ? name.slice(0, 20) + "..." : name;
@@ -137,10 +138,17 @@ function ProductCard({ product }) {
 
         <PriceAndDiscount product={product} />
         <Stock product={product} className="font-light text-xs" />
-        <Rating product={product} size={"1.2rem"} className="justify-center items-center" />
+        <Rating
+          product={product}
+          size={"1.2rem"}
+          className="justify-center items-center"
+        />
 
         <div className="card-actions justify-center">
-          <button className="flex w-full items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95">
+          <button
+            className="flex w-full h-8 items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95"
+            onClick={() => addToCart(product._id,product.finalPrice, 1)}
+          >
             <ShoppingCartPlus className="mr-2" size={30} />
             Add to Cart
           </button>

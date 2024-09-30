@@ -88,7 +88,11 @@ const SearchResults = ({ searchQuery, isFocused }) => {
       </div>
     );
   } else if (noResults) {
-    content = <div className="p-4 text-center ">No products found</div>; 
+    content = (
+      <div className="border-b-neutral border-b-2 last:border-b-4 last:border-b-neutral p-4 text-center bg-base-200 bg-opacity-20 backdrop-blur-sm">
+        <span className="text-base-content">No products found</span>
+      </div>
+    );
   } else if (products.length === 0) {
     content = null;
   } else {
@@ -105,8 +109,10 @@ const SearchResults = ({ searchQuery, isFocused }) => {
 
         {hasMore && (
           <Link href={`/search?search=${debouncedQuery}`}>
-            <div className="relative p-2 text-center ">
-              <span className="absolute inset-0 bg-base-100 bg-opacity-80 backdrop-blur-sm  transition-transform transform scale-x-0 group-hover:scale-x-100 origin-center duration-300 ease-out"></span>
+            <div className="relative p-2 text-center group">
+              {" "}
+              {/* Add 'group' class here */}
+              <span className="absolute inset-0 bg-base-100 bg-opacity-80 backdrop-blur-sm transition-transform transform scale-x-0 group-hover:scale-x-100 origin-center duration-300 ease-out"></span>
               <span className="relative z-10 cursor-pointer text-base-content">
                 See more results...
               </span>
@@ -128,7 +134,9 @@ const SearchResults = ({ searchQuery, isFocused }) => {
             exit={{ scale: 0, opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
           >
-            <div className=" bg-base-100 bg-opacity-80 backdrop-blur-sm  w-96 lg:w-full">{content}</div>
+            <div className=" bg-base-100 bg-opacity-80 backdrop-blur-md  w-96 lg:w-full">
+              {content}
+            </div>
           </motion.div>
         </div>
       )}

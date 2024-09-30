@@ -7,7 +7,7 @@ import Rating from "./Rating"; // Ensure this is correctly imported
 const SearchResult = ({ product }) => {
   return (
     <Link href={`/products/${product.id}`} >
-      <div className="relative group flex items-center p-4 overflow-hidden hover:shadow-lg transition-shadow duration-300  cursor-pointer">
+      <div className="relative group flex items-center px-4 overflow-hidden hover:shadow-lg transition-shadow duration-300  cursor-pointer">
         {/* Background Hover Animation */}
         <span className="absolute inset-0 bg-base-200 transition-transform transform scale-x-0 group-hover:scale-x-100 origin-top-left duration-300 ease-out"></span>
 

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Loading from "./Loading";
 import { useUser } from "../_contexts/userContext";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 export default function SignUpLoginTab() {
   const { setUser } = useUser();
   const [formData, setFormData] = useState({
@@ -99,6 +99,7 @@ export default function SignUpLoginTab() {
       const data = await response.json();
       console.log("Sign Up successful:", data.data.user);
       setUser(data.data.user);
+      localStorage.setItem("isLoggedIn",true)
       toast.success("Sign Up sucessful, You're now logged in");
 
       // Handle success, e.g., navigate to a different page or show a success message
@@ -147,6 +148,7 @@ export default function SignUpLoginTab() {
       }
       const data = await response.json();
       setUser(data.data.user);
+      localStorage.setItem("isLoggedIn",true)
       toast.success("Logged in sucessfully");
     } catch (error) {
       console.log(error.message);

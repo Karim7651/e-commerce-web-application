@@ -1,4 +1,5 @@
 "use client";
+import {useCart} from "../_contexts/cartContext"
 import Image from "next/image";
 import { useState, useRef } from "react";
 import Truck from "tabler-icons-react/dist/icons/truck";
@@ -45,7 +46,7 @@ function ProductDetails({ product }) {
   if (!product) {
     return <div>No product</div>;
   }
-
+  const {addToCart} = useCart()
   const [currentImage, setCurrentImage] = useState(0);
   const [isFading, setIsFading] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -95,9 +96,7 @@ function ProductDetails({ product }) {
     setQuantity(newQuantity > 0 ? newQuantity : 1);
   };
 
-  const handleAddToCart = () => {
-    console.log(`Added ${quantity} of ${product.name} to the cart`);
-  };
+
 
   const handleBuyNow = () => {
     console.log(`Proceeding to checkout with ${quantity} of ${product.name}`);
@@ -211,7 +210,7 @@ function ProductDetails({ product }) {
           {/* Buttons */}
           <div className="flex gap-4 mb-4 h-10 justify-center items-center">
             <button
-              onClick={handleAddToCart}
+              onClick={() => addToCart(product._id,product.finalPrice, quantity)}
               className="flex items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 w-[50%] active:scale-95"
             >
               <ShoppingCartPlus className="mr-2" size={30} />

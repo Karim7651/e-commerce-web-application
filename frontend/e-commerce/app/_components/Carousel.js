@@ -13,6 +13,7 @@ const Carousel = () => {
   const [startX, setStartX] = useState(0);
   const [currentX, setCurrentX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
+  const [transitionDuration, setTransitionDuration] = useState(500); // Default to 500ms
   const intervalRef = useRef(null);
 
   // Function to reset interval
@@ -27,6 +28,7 @@ const Carousel = () => {
 
   const nextSlide = () => {
     setActiveIndex((prevIndex) => (prevIndex + 1) % images.length);
+    setTransitionDuration(500); // Set duration for auto-swiping
     resetInterval();
   };
 
@@ -34,6 +36,7 @@ const Carousel = () => {
     setActiveIndex((prevIndex) =>
       prevIndex === 0 ? images.length - 1 : prevIndex - 1
     );
+    setTransitionDuration(500); // Set duration for auto-swiping
     resetInterval();
   };
 
@@ -45,7 +48,9 @@ const Carousel = () => {
   // Handle swipe start
   const handleTouchStart = (e) => {
     setStartX(e.touches[0].clientX);
+    setCurrentX(e.touches[0].clientX);
     setIsSwiping(true);
+    setTransitionDuration(0); // Set duration for manual swiping
     resetInterval(); // Stop auto slide on touch start
   };
 
@@ -61,31 +66,28 @@ const Carousel = () => {
   const handleTouchEnd = () => {
     const distance = currentX - startX;
 
-    if (distance < -50 && activeIndex < images.length - 1) {
+    if (distance < -250 && activeIndex < images.length - 1) {
       nextSlide(); // Swipe left
-    } else if (distance > 50 && activeIndex > 0) {
+    } else if (distance > 250 && activeIndex > 0) {
       prevSlide(); // Swipe right
     }
-    
+
     // Reset states
     setIsSwiping(false);
     setCurrentX(0); // Reset currentX after swipe
+    setTransitionDuration(500); // Ensure the transition duration is reset for auto-swiping
   };
 
-  // Calculate translateX
-  const translateX = (activeIndex * -100) + (isSwiping ? ((currentX - startX) / window.innerWidth) * 1000 : 0);
-  
+  // Calculate translateX for visual feedback during swipe
+  const translateX =
+    activeIndex * -100 +
+    (isSwiping ? ((currentX - startX) / window.innerWidth) * 100 : 0);
+
   // Calculate final translation with limits
-  const finalTranslateX = (() => {
-    // Define the max left and right limits
-    const maxLeft = 0; // No swipe past the first image
-    const maxRight = (images.length - 1) * -100; // No swipe past the last image
-    
-    // Clamp the translateX value
-    if (translateX > maxLeft) return maxLeft;
-    if (translateX < maxRight) return maxRight;
-    return translateX;
-  })();
+  const finalTranslateX = Math.max(
+    Math.min(translateX, 0),
+    (images.length - 1) * -100
+  );
 
   return (
     <header
@@ -96,8 +98,11 @@ const Carousel = () => {
     >
       {/* Carousel Slides */}
       <div
-        className="relative flex transition-transform duration-700 ease-in-out"
-        style={{ transform: `translateX(${finalTranslateX}%)` }}
+        className="relative flex"
+        style={{
+          transform: `translateX(${finalTranslateX}%)`,
+          transition: `transform ${transitionDuration}ms ease-in-out`, // Set transition duration inline
+        }}
       >
         {images.map((image, index) => (
           <div
@@ -107,11 +112,11 @@ const Carousel = () => {
             <Image
               src={image.src}
               alt={image.alt}
-              width={1300}
+              width={1200}
               height={400}
-              className="rounded-md shadow-lg"
+              priority
+              className=" shadow-lg"
               style={{
-                objectFit: "cover",
                 borderRadius: "93% 7% 93% 7% / 8% 95% 5% 92%",
               }}
             />
@@ -133,7 +138,11 @@ const Carousel = () => {
             stroke="currentColor"
             className="w-6 h-6 text-gray-800"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
       )}
@@ -152,7 +161,11 @@ const Carousel = () => {
             stroke="currentColor"
             className="w-6 h-6 text-gray-800"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       )}
