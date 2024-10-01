@@ -8,8 +8,8 @@ export const getCart = catchAsync(async (req, res, next) => {
 });
 
 export const updateCart = catchAsync(async (req, res, next) => {
-  const { update, override, products, productId, quantity } = req.body;
-  console.log(products)
+  const { update, override, products, productId, quantity, del } = req.body;
+  console.log(req.body)
 
   const cart = await Cart.findById(req.user.cart._id);
 
@@ -27,6 +27,8 @@ export const updateCart = catchAsync(async (req, res, next) => {
       product: item.productId,
       quantity: Math.max(1, Number(item.quantity)),
     }));
+  } else if (del) {
+    cart.products = cart.products.filter(prod => !prod.product.equals(productId));
   } else {
     if (productId && quantity) {
       if (Number(quantity) <= 0) {
@@ -54,10 +56,10 @@ export const updateCart = catchAsync(async (req, res, next) => {
       );
     }
   }
-  await cart.populate('products.product');
   await cart.save();
   res.status(200).json(cart);
 });
+
 
 export const removeItemFromCart = catchAsync(async (req, res, next) => {
   const { productId } = req.params;

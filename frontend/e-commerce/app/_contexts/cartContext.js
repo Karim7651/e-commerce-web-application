@@ -1,7 +1,8 @@
 "use client";
 import { createContext, useState, useContext, useEffect } from "react";
-import { useUser } from "./userContext"; // Assuming your userContext is in the same directory
+import { useUser } from "./userContext";
 import { toast } from "sonner";
+
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
@@ -11,6 +12,7 @@ export const CartProvider = ({ children }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalNumberOfItems, setTotalNumberOfItems] = useState(0);
 
+  // Fetch local cart from localStorage
   const getLocalCart = () => {
     if (typeof window !== "undefined") {
       const localCart = localStorage.getItem("cart");
@@ -19,76 +21,81 @@ export const CartProvider = ({ children }) => {
     return [];
   };
 
-  useEffect(() => {
-  const syncCart = () => {
-    if (loading) return; // Wait for user data to load
-
-    setLoadingCart(true);
-    if (user) {
-      // When logged in, use the user's cart
-      setCart(user.cart?.products || []);
-    } else {
-      // When logged out, reset the cart and totals
-      const localCart = getLocalCart();
-      if (localCart.length > 0) {
-        setCart(localCart);
-      } else {
-        setCart([]);
-        setTotalNumberOfItems(0);
-        setTotalPrice(0);
-      }
-    }
-    setLoadingCart(false);
-  };
-
-  syncCart();
-}, [user, loading]);
-
-
-  useEffect(() => {
-    const calculateTotals = () => {
-      const totalPrice = cart.reduce(
-        (sum, item) => sum + (item.price || 0) * (item.quantity || 0), // Use fallback values
-        0
-      );
-      const totalItems = cart.reduce(
-        (count, item) => count + (item.quantity || 0),
-        0
-      ); // Use fallback value
-      setTotalPrice(totalPrice);
-      setTotalNumberOfItems(totalItems);
-    };
-
-    if (cart?.length > 0) {
-      calculateTotals();
-    }
-  }, [cart]);
-
+  // Save local cart to localStorage
   const saveLocalCart = (cart) => {
     if (typeof window !== "undefined") {
       localStorage.setItem("cart", JSON.stringify(cart));
     }
   };
-  useEffect(() => {
-    if (user) {
-      mergeLocalCartToApiCart();
-    }
-  }, [user]);
 
+  useEffect(() => {
+    const syncCart = () => {
+      if (loading) return;
+
+      setLoadingCart(true);
+
+      if (user) {
+        setCart(user.cart?.products || []);
+        setTotalNumberOfItems(user.cart?.totalNumberOfItems || 0);
+        setTotalPrice(user.cart?.totalPrice || 0);
+      } else {
+        // If user isn't logged in, use the local cart
+        const localCart = getLocalCart();
+        setCart(localCart);
+
+        // Calculate totalNumberOfItems and totalPrice for local cart
+        const totalItems = localCart.reduce(
+          (acc, item) => acc + item.quantity,
+          0
+        );
+        const totalPrice = localCart.reduce(
+          (acc, item) => acc + item.quantity * item.price,
+          0
+        );
+
+        setTotalNumberOfItems(totalItems);
+        setTotalPrice(totalPrice);
+      }
+
+      setLoadingCart(false);
+    };
+
+    syncCart();
+  }, [loading, user]);
+
+  // Recalculate total price and number of items
+  useEffect(() => {
+    const calculateTotals = () => {
+      const totalPrice = cart.reduce(
+        (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
+        0
+      );
+      const totalItems = cart.reduce(
+        (count, item) => count + (item.quantity || 0),
+        0
+      );
+
+      setTotalPrice(totalPrice);
+      setTotalNumberOfItems(totalItems);
+    };
+
+    if (!user) {
+      calculateTotals();
+    }
+  }, [cart]);
+
+  // Merge local cart with API cart for logged-in users
   const mergeLocalCartToApiCart = async () => {
-    console.log("HERE");
     if (!user || loading) return;
 
     const localCart = getLocalCart();
     if (localCart.length === 0) return;
 
-    // Map user cart products to the desired format
     const userProducts = user.cart.products.map((item) => ({
       productId: item.product._id,
       quantity: item.quantity,
     }));
 
-    // Combine userProducts and localCart
     const combinedProductsMap = new Map();
 
     // Add user products to the map
@@ -96,13 +103,13 @@ export const CartProvider = ({ children }) => {
       combinedProductsMap.set(product.productId, product);
     });
 
-    // Add local cart products to the map, updating quantity if the product already exists
+    // Merge local cart products with user products
     localCart.forEach((item) => {
       if (combinedProductsMap.has(item.productId)) {
         const existingProduct = combinedProductsMap.get(item.productId);
         combinedProductsMap.set(item.productId, {
           productId: item.productId,
-          quantity: existingProduct.quantity + item.quantity, // Sum quantities
+          quantity: existingProduct.quantity + item.quantity,
         });
       } else {
         combinedProductsMap.set(item.productId, {
@@ -112,35 +119,27 @@ export const CartProvider = ({ children }) => {
       }
     });
 
-    const products = Array.from(combinedProductsMap.values()); // Use .values() to get the product objects
-    console.log(`Products before POST request:`, products); // Log products array
+    const products = Array.from(combinedProductsMap.values());
 
     try {
-      const endpoint = `${process.env.NEXT_PUBLIC_API}/cart/products`;
-      console.log(endpoint);
-      const res = await fetch(endpoint, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API}/cart/products`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          override: true,
-          products,
-        }),
+        body: JSON.stringify({ override: true, products }),
         credentials: "include",
       });
 
       if (res.ok) {
         const data = await res.json();
-        console.log(data);
-        setCart(data.updatedCart);
+        console.log(`data is ${data}`)
         setUser((prevUser) => ({
-          ...prevUser,
-          cart: data
-        }));
-        setCart(data);
+            ...prevUser,
+            cart: data,
+          }));
         localStorage.removeItem("cart");
-        toast.success("Local cart successfully merged with the account")
+        toast.success("Local cart successfully merged with the account");
       } else {
         console.error("Failed to merge cart");
       }
@@ -149,47 +148,49 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const addToCart = async (productId, price, quantity = 1) => {
+  useEffect(() => {
     if (user) {
-      // If a user is logged in, send a PATCH request to update the cart on the server
+      mergeLocalCartToApiCart();
+    }
+  }, [user]);
+
+  // Add product to cart (for both logged-in and guest users)
+  const addToCart = async (productId,name,imageCover, price, quantity = 1) => {
+    if (user) {
+      // For logged-in users, send a PATCH request to update the cart on the server
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API}/cart/products`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            productId,
-            quantity,
-          }),
-          credentials: "include",
-        });
-  
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API}/cart/products`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ productId, quantity }),
+            credentials: "include",
+          }
+        );
+
         if (res.ok) {
           const data = await res.json();
-          console.log(data)
-          setCart(data.updatedCart); 
           setUser((prevUser) => ({
             ...prevUser,
             cart: data,
           }));
-          console.log("HEREEE")
-          toast.success("Item added to cart")
+          
+          toast.success("Item added to cart");
         } else {
-          toast.error("Failed to add item to cart")
-          console.error("Failed to update cart on server");
+          toast.error("Failed to add item to cart");
         }
       } catch (error) {
         console.error("Error updating cart on server:", error);
       }
     } else {
-      // If no user is logged in, update the local cart
+      // For guest users, update the local cart
       setCart((prevCart) => {
         const safePrevCart = Array.isArray(prevCart) ? prevCart : [];
         const existingProduct = safePrevCart.find(
           (item) => item.productId === productId
         );
-  
+
         let updatedCart;
         if (existingProduct) {
           updatedCart = safePrevCart.map((item) =>
@@ -198,37 +199,81 @@ export const CartProvider = ({ children }) => {
               : item
           );
         } else {
-          updatedCart = [...safePrevCart, { productId, price, quantity }];
+          updatedCart = [...safePrevCart, { productId, price, quantity, imageCover,name}];
         }
-        console.log("HEREEE 2")
-        toast.success("Item added to cart")
+
         saveLocalCart(updatedCart);
+        toast.success("Item added to cart");
         return updatedCart;
       });
     }
   };
+
+  const removeFromCart = async (productId) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/cart/products`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          del: true, // Use 'del' instead of 'delete'
+          productId,
+        }),
+        credentials: 'include',
+      });
+  
+      if (response.ok) {
+        const updatedCart = await response.json();
+        toast.success('Product removed from cart successfully!');
+        setUser((prevUser) => ({
+          ...prevUser,
+          cart: updatedCart,
+        }));
+      } else {
+        const errorData = await response.json();
+        toast.error("Removing product from cart failed");
+      }
+    } catch (error) {
+      console.error('Error removing product from cart:', error);
+      toast.error("Removing product from cart failed");
+    }
+  };
   
 
-  const removeFromCart = (productId) => {
-    setCart((prevCart) => {
-      const updatedCart = prevCart.filter(
-        (item) => item.productId !== productId
-      );
-      if (!user) saveLocalCart(updatedCart);
-      return updatedCart;
-    });
+  const updateCartQuantity = async (productId, quantity) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/cart/products`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          update: true,
+          productId,
+          quantity,
+        }),
+        credentials: 'include',
+      });
+  
+      if (response.ok) {
+        const updatedCart = await response.json();
+        toast.success('Cart quantity updated successfully!');
+        setUser((prevUser) => ({
+          ...prevUser,
+          cart:updatedCart,}))
+      } else {
+        const errorData = await response.json();
+        toast.error("Updaing cart failed");
+      }
+    } catch (error) {
+      console.error('Error updating cart:', error);
+      toast.error("Updaing cart failed");
+    }
   };
-
-  const updateCartQuantity = (productId, quantity) => {
-    setCart((prevCart) => {
-      const updatedCart = prevCart.map((item) =>
-        item.productId === productId ? { ...item, quantity } : item
-      );
-
-      if (!user) saveLocalCart(updatedCart);
-      return updatedCart;
-    });
-  };
+  
+  
+  
 
   return (
     <CartContext.Provider
@@ -238,7 +283,6 @@ export const CartProvider = ({ children }) => {
         totalPrice,
         totalNumberOfItems,
         addToCart,
-        setCart,
         removeFromCart,
         updateCartQuantity,
         mergeLocalCartToApiCart,

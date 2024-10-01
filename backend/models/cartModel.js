@@ -26,7 +26,7 @@ cartSchema.virtual("totalPrice").get(function () {
   }
   // array.reduce(callback(accumulator, currentValue), initialValue);
   return this.products.reduce((total, item) => {
-    return total + item.product.price * item.quantity;
+    return total +( item.product.price - item.product.priceDiscount) * item.quantity;
   }, 0);
 });
 
@@ -41,8 +41,13 @@ cartSchema.virtual("totalNumberOfItems").get(function () {
 cartSchema.pre(/^find/, function (next) {
   this.populate({
     path: "products.product",
-    select: "name price",
+    select: "name price priceDiscount",
   });
+  next();
+});
+cartSchema.pre('save', async function (next) {
+  // Populate products.product to ensure prices are available
+  await this.populate('products.product');
   next();
 });
 

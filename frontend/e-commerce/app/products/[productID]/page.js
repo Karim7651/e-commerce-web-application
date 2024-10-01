@@ -29,7 +29,9 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const { productID } = params;
   const product = await getProductDetails(productID);
-
+  if(!product){
+    return (<div className="text-2xl font-bold flex flex-row justify-center items-center h-svh"><h2>No product found with this ID</h2></div>)
+  }
   return (
     <>
       <ProductDetails product={product} />

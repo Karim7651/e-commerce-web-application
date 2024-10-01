@@ -16,8 +16,7 @@ export default function Navbar() {
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
-  const { totalPrice, totalNumberOfItems } = useCart();
-  console.log(totalNumberOfItems)
+  const { totalPrice, totalNumberOfItems,cart } = useCart();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -44,7 +43,6 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
 
   // Close the dropdown menu when a link is clicked
   const handleLinkClick = () => {
@@ -205,15 +203,24 @@ export default function Navbar() {
             tabIndex={0}
             className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow"
           >
-            <div className="card-body">
-              <span className="text-lg font-bold">
-                {user?.cart?.products?.totalNumberOfItems || totalNumberOfItems || 0} Items
+            <div className="card-body bg-base-200 shadow-lg rounded-md">
+              <span className="text-lg font-medium">
+                {totalNumberOfItems || 0} Items
               </span>
-              <span className="text-info">{`Total: $${
-                user?.cart?.totalPrice.toLocaleString() || totalPrice.toLocaleString() || 0
-              }`}</span>
-              <div className="card-actions">
-                <button className="btn btn-primary btn-block">View cart</button>
+
+              <span className="text-base-content font-bold">
+                <span className="font-light text-base-content text-[0.6rem] relative top-[-4px] mr-[2px]">
+                  EGP
+                </span>
+                {`${totalPrice.toLocaleString() || 0}`}
+              </span>
+
+              <div>
+                <Link href="/cart">
+                  <button className="btn btn-block btn-outline">
+                    View cart
+                  </button>
+                </Link>
               </div>
             </div>
           </div>

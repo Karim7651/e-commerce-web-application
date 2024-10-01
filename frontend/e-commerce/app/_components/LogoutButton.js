@@ -7,7 +7,6 @@ import {useCart} from "../_contexts/cartContext"
 export default function LogoutButton() {
   const { setUser } = useUser();
   const [isLoading, setIsLoading] = useState(false);
-  const {setCart} = useCart()
   const handleLogout = async () => {
     try {
       setIsLoading(true);
@@ -23,11 +22,6 @@ export default function LogoutButton() {
         console.log("Logged out successfully");
         localStorage.removeItem("isLoggedIn")
         setUser(null);
-        setCart({
-          products: [],
-          totalPrice: 0,
-          totalNumberOfItems: 0,
-        });
         toast.success("Logged out sucessfully")
       } else {
         console.error("Failed to log out");

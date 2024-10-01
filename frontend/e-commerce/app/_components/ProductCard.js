@@ -147,7 +147,7 @@ function ProductCard({ product }) {
         <div className="card-actions justify-center">
           <button
             className="flex w-full h-8 items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95"
-            onClick={() => addToCart(product._id,product.finalPrice, 1)}
+            onClick={() => addToCart(product._id,product.name,product.imageCover,product.finalPrice)}
           >
             <ShoppingCartPlus className="mr-2" size={30} />
             Add to Cart
