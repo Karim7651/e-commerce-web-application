@@ -12,7 +12,7 @@ export const CartProvider = ({ children }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalNumberOfItems, setTotalNumberOfItems] = useState(0);
 
-  // Fetch local cart from localStorage
+//causes and error without type of window is undefined
   const getLocalCart = () => {
     if (typeof window !== "undefined") {
       const localCart = localStorage.getItem("cart");
@@ -32,16 +32,13 @@ export const CartProvider = ({ children }) => {
     const syncCart = () => {
       if (loading) return;
       if (user) {
-
         setCart(user.cart?.products || []);
         setTotalNumberOfItems(user.cart?.totalNumberOfItems || 0);
         setTotalPrice(user.cart?.totalPrice || 0);
       } else {
-        // If user isn't logged in, use the local cart
+        //if no user
         const localCart = getLocalCart();
         setCart(localCart);
-
-        // Calculate totalNumberOfItems and totalPrice for local cart
         const totalItems = localCart.reduce(
           (acc, item) => acc + item.quantity,
           0
@@ -57,8 +54,7 @@ export const CartProvider = ({ children }) => {
 
     syncCart();
   }, [loading, user]);
-
-  // Recalculate total price and number of items
+  //calculating number of items and totalPrice in case there's no user
   useEffect(() => {
     const calculateTotals = () => {
       const totalPrice = cart.reduce(
@@ -79,13 +75,13 @@ export const CartProvider = ({ children }) => {
     }
   }, [cart]);
 
-  // Merge local cart with API cart for logged-in users
+  //merge local cart with api cart
   const mergeLocalCartToApiCart = async () => {
     if (!user || loading) return;
 
     const localCart = getLocalCart();
     if (localCart.length === 0) return;
-
+    //api cart
     const userProducts = user.cart.products.map((item) => ({
       productId: item.product._id,
       quantity: item.quantity,
@@ -93,12 +89,12 @@ export const CartProvider = ({ children }) => {
 
     const combinedProductsMap = new Map();
 
-    // Add user products to the map
+    //api cart map
     userProducts.forEach((product) => {
       combinedProductsMap.set(product.productId, product);
     });
 
-    // Merge local cart products with user products
+    //merge both carts
     localCart.forEach((item) => {
       if (combinedProductsMap.has(item.productId)) {
         const existingProduct = combinedProductsMap.get(item.productId);
@@ -140,7 +136,7 @@ export const CartProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Error merging cart:", error);
-    }finally{
+    } finally {
       setLoadingCart(false);
     }
   };
@@ -186,7 +182,7 @@ export const CartProvider = ({ children }) => {
         }
       } catch (error) {
         console.error("Error updating cart on server:", error);
-      }finally{
+      } finally {
         setLoadingCart(false);
       }
     } else {

@@ -99,7 +99,7 @@ export default function SignUpLoginTab() {
       const data = await response.json();
       console.log("Sign Up successful:", data.data.user);
       setUser(data.data.user);
-      localStorage.setItem("isLoggedIn",true)
+      localStorage.setItem("isLoggedIn", true);
       toast.success("Sign Up sucessful, You're now logged in");
 
       // Handle success, e.g., navigate to a different page or show a success message
@@ -148,7 +148,7 @@ export default function SignUpLoginTab() {
       }
       const data = await response.json();
       setUser(data.data.user);
-      localStorage.setItem("isLoggedIn",true)
+      localStorage.setItem("isLoggedIn", true);
       toast.success("Logged in sucessfully");
     } catch (error) {
       console.log(error.message);

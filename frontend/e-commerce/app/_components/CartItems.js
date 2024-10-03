@@ -13,26 +13,30 @@ export default function CartItems() {
     totalPrice,
     totalNumberOfItems,
     clearCart,
-    loadingCart
+    loadingCart,
   } = useCart();
-  const { user,loading } = useUser();
-  if( loading || loadingCart){
+  const { user, loading } = useUser();
+  if (loading || loadingCart) {
+    console.log(cart);
     return (
       <main className="h-svh flex items-center justify-center mx-auto">
-        <Loading/>
-      </main>
-    )
-  }
-  if (!user) {
-    return (
-      <main className="h-svh flex items-center justify-center mx-auto">
-        <h2 className="text-3xl font-bold text-base-content select-none">
-          Login to view your cart
-        </h2>
+        <Loading />
       </main>
     );
   }
-  
+  if (!user || cart[0]?.productId) {
+    console.log(cart);
+    return (
+      <main className="h-svh flex items-center justify-center mx-auto flex-col">
+        <h2 className="text-3xl font-bold text-base-content select-none">
+          Login to view your cart
+        </h2>
+        <p className="text-xl font-light text-base-content select-none mt-2">
+          Don't worry your cart will be moved to your account
+        </p>
+      </main>
+    );
+  }
 
   if (cart.length === 0) {
     return (
@@ -43,7 +47,9 @@ export default function CartItems() {
       </main>
     );
   }
-  console.log(cart)
+  console.log(cart);
+  console.log(`user loading state ${loading}`);
+  console.log(`cart loading state ${loadingCart}`);
   return (
     <main className="w-[80%] min-h-svh mx-auto my-auto">
       {/* Section for cart items */}
@@ -108,7 +114,7 @@ export default function CartItems() {
 
         {/* Buy Now Button */}
         <button
-          onClick={clearCart} 
+          onClick={clearCart}
           className=" w-[30%] flex items-center justify-center px-4 py-2 bg-green-500 shadow-lg text-base-content rounded-sm hover:bg-green-600 hover:scale-105 hover:shadow-xl transition-all duration-300  active:scale-95"
           aria-label="Proceed to checkout"
         >
