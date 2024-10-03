@@ -8,7 +8,7 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const { user, loading, setUser } = useUser();
   const [cart, setCart] = useState([]);
-  const [loadingCart, setLoadingCart] = useState(true);
+  const [loadingCart, setLoadingCart] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalNumberOfItems, setTotalNumberOfItems] = useState(0);
 
@@ -31,10 +31,8 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     const syncCart = () => {
       if (loading) return;
-
-      setLoadingCart(true);
-
       if (user) {
+
         setCart(user.cart?.products || []);
         setTotalNumberOfItems(user.cart?.totalNumberOfItems || 0);
         setTotalPrice(user.cart?.totalPrice || 0);
@@ -52,12 +50,9 @@ export const CartProvider = ({ children }) => {
           (acc, item) => acc + item.quantity * item.price,
           0
         );
-
         setTotalNumberOfItems(totalItems);
         setTotalPrice(totalPrice);
       }
-
-      setLoadingCart(false);
     };
 
     syncCart();
@@ -122,6 +117,7 @@ export const CartProvider = ({ children }) => {
     const products = Array.from(combinedProductsMap.values());
 
     try {
+      setLoadingCart(true);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API}/cart/products`, {
         method: "PATCH",
         headers: {
@@ -133,11 +129,10 @@ export const CartProvider = ({ children }) => {
 
       if (res.ok) {
         const data = await res.json();
-        console.log(`data is ${data}`)
         setUser((prevUser) => ({
-            ...prevUser,
-            cart: data,
-          }));
+          ...prevUser,
+          cart: data,
+        }));
         localStorage.removeItem("cart");
         toast.success("Local cart successfully merged with the account");
       } else {
@@ -145,6 +140,8 @@ export const CartProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Error merging cart:", error);
+    }finally{
+      setLoadingCart(false);
     }
   };
 
@@ -155,7 +152,14 @@ export const CartProvider = ({ children }) => {
   }, [user]);
 
   // Add product to cart (for both logged-in and guest users)
-  const addToCart = async (productId,name,imageCover, price, quantity = 1) => {
+  const addToCart = async (
+    productId,
+    name,
+    imageCover,
+    price,
+    quantity = 1
+  ) => {
+    setLoadingCart(true);
     if (user) {
       // For logged-in users, send a PATCH request to update the cart on the server
       try {
@@ -175,13 +179,15 @@ export const CartProvider = ({ children }) => {
             ...prevUser,
             cart: data,
           }));
-          
+
           toast.success("Item added to cart");
         } else {
           toast.error("Failed to add item to cart");
         }
       } catch (error) {
         console.error("Error updating cart on server:", error);
+      }finally{
+        setLoadingCart(false);
       }
     } else {
       // For guest users, update the local cart
@@ -199,33 +205,39 @@ export const CartProvider = ({ children }) => {
               : item
           );
         } else {
-          updatedCart = [...safePrevCart, { productId, price, quantity, imageCover,name}];
+          updatedCart = [
+            ...safePrevCart,
+            { productId, price, quantity, imageCover, name },
+          ];
         }
-
         saveLocalCart(updatedCart);
         toast.success("Item added to cart");
         return updatedCart;
       });
+      setLoadingCart(false);
     }
   };
 
   const removeFromCart = async (productId) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/cart/products`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          del: true, // Use 'del' instead of 'delete'
-          productId,
-        }),
-        credentials: 'include',
-      });
-  
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API}/cart/products`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            del: true, // Use 'del' instead of 'delete'
+            productId,
+          }),
+          credentials: "include",
+        }
+      );
+
       if (response.ok) {
         const updatedCart = await response.json();
-        toast.success('Product removed from cart successfully!');
+        toast.success("Product removed from cart successfully!");
         setUser((prevUser) => ({
           ...prevUser,
           cart: updatedCart,
@@ -235,45 +247,76 @@ export const CartProvider = ({ children }) => {
         toast.error("Removing product from cart failed");
       }
     } catch (error) {
-      console.error('Error removing product from cart:', error);
+      console.error("Error removing product from cart:", error);
       toast.error("Removing product from cart failed");
     }
   };
-  
 
   const updateCartQuantity = async (productId, quantity) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/cart/products`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          update: true,
-          productId,
-          quantity,
-        }),
-        credentials: 'include',
-      });
-  
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API}/cart/products`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            update: true,
+            productId,
+            quantity,
+          }),
+          credentials: "include",
+        }
+      );
+
       if (response.ok) {
         const updatedCart = await response.json();
-        toast.success('Cart quantity updated successfully!');
+        toast.success("Cart quantity updated successfully!");
         setUser((prevUser) => ({
           ...prevUser,
-          cart:updatedCart,}))
+          cart: updatedCart,
+        }));
       } else {
         const errorData = await response.json();
         toast.error("Updaing cart failed");
       }
     } catch (error) {
-      console.error('Error updating cart:', error);
+      console.error("Error updating cart:", error);
       toast.error("Updaing cart failed");
     }
   };
-  
-  
-  
+
+  const clearCart = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API}/cart/products`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        const updatedCart = await response.json();
+        toast.success("Cart cleared sucessfully");
+        setUser((prevUser) => ({
+          ...prevUser,
+          cart: updatedCart,
+        }));
+      } else {
+        const errorData = await response.json();
+        toast.error("Clearing cart failed");
+      }
+    } catch (error) {
+      console.error('Clearing cart failed"', error);
+      toast.error("Clearing cart failed");
+    }
+  };
 
   return (
     <CartContext.Provider
@@ -286,6 +329,7 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         updateCartQuantity,
         mergeLocalCartToApiCart,
+        clearCart,
       }}
     >
       {children}

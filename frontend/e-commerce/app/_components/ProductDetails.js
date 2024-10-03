@@ -1,5 +1,5 @@
 "use client";
-import {useCart} from "../_contexts/cartContext"
+import { useCart } from "../_contexts/cartContext";
 import Image from "next/image";
 import { useState, useRef } from "react";
 import Truck from "tabler-icons-react/dist/icons/truck";
@@ -13,6 +13,7 @@ import Stock from "./Stock";
 import PriceAndDiscount from "./PriceAndDiscount";
 import Rating from "./Rating";
 import ReviewContainer from "./ReviewContainer";
+import Loading from "./Loading";
 
 function ProductDetails({ product }) {
   // Sample reviews array
@@ -46,7 +47,7 @@ function ProductDetails({ product }) {
   if (!product) {
     return <div>No product</div>;
   }
-  const {addToCart} = useCart()
+  const { addToCart,loadingCart } = useCart();
   const [currentImage, setCurrentImage] = useState(0);
   const [isFading, setIsFading] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -96,8 +97,6 @@ function ProductDetails({ product }) {
     setQuantity(newQuantity > 0 ? newQuantity : 1);
   };
 
-
-
   const handleBuyNow = () => {
     console.log(`Proceeding to checkout with ${quantity} of ${product.name}`);
   };
@@ -110,11 +109,10 @@ function ProductDetails({ product }) {
     },
   ];
 
-  // Check if there are any subCategories
+  //check if there are any subCategories
   if (product.subCategories && product.subCategories.length > 0) {
-    // Assuming you want to use the first subCategory
     breadcrumbItems.push({
-      label: product.subCategories[0], // Adjust this if you want to use a different subCategory
+      label: product.subCategories[0],
       url: `/search?subCategories=${product.subCategories[0]}`,
     });
   }
@@ -182,7 +180,11 @@ function ProductDetails({ product }) {
 
           <Stock product={product} className={"font-light text-xs mb-1"} />
           <div className="flex items-center justify-start mb-4">
-            <Rating product={product} size={"1.5rem"} className="justify-center items-center" />
+            <Rating
+              product={product}
+              size={"1.5rem"}
+              className="justify-center items-center"
+            />
           </div>
           {/* Quantity Selector */}
           <div className="flex flex-row items-center justify-between mb-4">
@@ -210,12 +212,18 @@ function ProductDetails({ product }) {
           {/* Buttons */}
           <div className="flex gap-4 mb-4 h-10 justify-center items-center">
             <button
-              onClick={() => addToCart(product._id,product.finalPrice, quantity)}
-              className="flex items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 w-[50%] active:scale-95"
+              onClick={() =>
+                addToCart(product._id,product.name,product.imageCover,product.finalPrice,quantity)
+              }
+              className="flex items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 w-[50%] active:scale-95 disabled:bg-slate-500 disabled:hover:scale-100 disabled:active:scale-100"
+              disabled={loadingCart} // Disable while loading
             >
-              <ShoppingCartPlus className="mr-2" size={30} />
-              Add to Cart
+              {!loadingCart && <ShoppingCartPlus className="mr-2" size={30} />}{" "}
+              {/* Show icon if not loading */}
+              {loadingCart ? <Loading /> : "Add to Cart"}
+              {/* Show spinner if loading */}
             </button>
+
             <button
               onClick={handleBuyNow}
               className="flex items-center justify-center px-4 py-2 bg-green-500 shadow-lg text-white rounded-sm hover:bg-green-600 hover:scale-105 hover:shadow-xl transition-all duration-300 w-[50%] active:scale-95"

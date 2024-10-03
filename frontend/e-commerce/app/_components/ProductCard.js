@@ -7,12 +7,13 @@ import Stock from "./Stock";
 import PriceAndDiscount from "./PriceAndDiscount";
 import Rating from "./Rating";
 import { useCart } from "../_contexts/cartContext";
+import Loading from "./Loading";
 function ProductCard({ product }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFading, setIsFading] = useState(false);
   const { _id, name, imageCover, images } = product;
   const allImages = [imageCover, ...images];
-  const { addToCart } = useCart();
+  const { addToCart,loadingCart } = useCart();
 
   const truncateName = (name) => {
     return name.length > 20 ? name.slice(0, 20) + "..." : name;
@@ -146,11 +147,12 @@ function ProductCard({ product }) {
 
         <div className="card-actions justify-center">
           <button
-            className="flex w-full h-8 items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95"
+            className="flex w-full h-8 items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95 disabled:bg-slate-500 disabled:hover:scale-100 disabled:active:scale-100"
             onClick={() => addToCart(product._id,product.name,product.imageCover,product.finalPrice)}
+            disabled={loadingCart}
           >
-            <ShoppingCartPlus className="mr-2" size={30} />
-            Add to Cart
+           {!loadingCart && <ShoppingCartPlus className="mr-2" size={30} />} 
+            {loadingCart ? <Loading/> : "Add to Cart"}
           </button>
         </div>
       </div>

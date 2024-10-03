@@ -2,7 +2,9 @@
 import { useCart } from "../_contexts/cartContext";
 import { useUser } from "../_contexts/userContext";
 import CartItem from "./CartItem";
-
+import Trash from "tabler-icons-react/dist/icons/trash";
+import ShoppingCartPlus from "tabler-icons-react/dist/icons/shopping-cart-plus";
+import Loading from "./Loading";
 export default function CartItems() {
   const {
     cart,
@@ -10,61 +12,110 @@ export default function CartItems() {
     removeFromCart,
     totalPrice,
     totalNumberOfItems,
+    clearCart,
+    loadingCart
   } = useCart();
-  const { user } = useUser();
+  const { user,loading } = useUser();
+  if( loading || loadingCart){
+    return (
+      <main className="h-svh flex items-center justify-center mx-auto">
+        <Loading/>
+      </main>
+    )
+  }
   if (!user) {
     return (
-      <>
-        <div className="h-svh  flex items-center justify-center mx-auto blur-lg">
-          <h2 className="text-3xl font-bold text-base-content z-10 select-none">
-            Login to view your cart
-          </h2>
-        </div>
-      </>
+      <main className="h-svh flex items-center justify-center mx-auto">
+        <h2 className="text-3xl font-bold text-base-content select-none">
+          Login to view your cart
+        </h2>
+      </main>
     );
   }
+  
+
   if (cart.length === 0) {
     return (
-      <div className="h-svh  flex items-center justify-center mx-auto">
+      <main className="h-svh flex items-center justify-center mx-auto">
         <h2 className="text-3xl font-bold text-base-content">
           Your cart is empty.
         </h2>
-      </div>
+      </main>
     );
   }
-
+  console.log(cart)
   return (
-    <section className="w-[80%] min-h-svh mx-auto !my-auto ">
-      <h2 className="sr-only">Shopping Cart Items</h2>
-      {cart.map((product, index) => {
-        console.log(product.id);
+    <main className="w-[80%] min-h-svh mx-auto my-auto">
+      {/* Section for cart items */}
+      <section aria-labelledby="cart-items-heading">
+        <h2 id="cart-items-heading" className="sr-only">
+          Shopping Cart Items
+        </h2>
+        <ul role="list" aria-label="List of items in your shopping cart">
+          {cart.map((product, index) => (
+            <li key={product.product.id}>
+              <CartItem
+                product={product}
+                updateCartQuantity={updateCartQuantity}
+                removeFromCart={removeFromCart}
+                hasBorder={index !== cart.length - 1}
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
 
-        return (
-          <CartItem
-            key={product.product.id}
-            product={product}
-            updateCartQuantity={updateCartQuantity}
-            removeFromCart={removeFromCart}
-            hasBorder={index !== cart.length - 1}
-          />
-        );
-      })}
-
-      <div className="flex justify-between items-center py-4 mt-4 border-t-[0.15rem] border-neutral-600">
-        <p className="text-lg">
-          Subtotal ({totalNumberOfItems} item{totalNumberOfItems > 1 && "s"}):
-        </p>
-        <div className="flex flex-row justify-start items-center">
-          {/* Currency first */}
-          <span className="font-light text-base-content text-[0.6rem] relative top-[-4px] mr-[2px]">
-            EGP
-          </span>
-          {/* Total Price with toLocaleString */}
-          <span className="text-lg font-semibold">
-            {totalPrice.toLocaleString()}
-          </span>
+      {/* Subtotal and checkout section */}
+      <section
+        aria-labelledby="cart-summary-heading"
+        className="py-4 mt-4 border-t-[0.15rem] border-neutral-600"
+      >
+        <h2 id="cart-summary-heading" className="sr-only">
+          Cart Summary
+        </h2>
+        <div className="flex justify-between items-center">
+          <p className="text-lg">
+            Subtotal ({totalNumberOfItems} item{totalNumberOfItems > 1 && "s"}):
+          </p>
+          <div className="flex flex-row justify-start items-center">
+            <span
+              className="font-light text-base-content text-[0.6rem] relative top-[-4px] mr-[2px]"
+              aria-hidden="true"
+            >
+              EGP
+            </span>
+            <span className="text-lg font-semibold">
+              {totalPrice.toLocaleString()}
+            </span>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Action buttons */}
+      <section
+        aria-label="Cart actions"
+        className="flex w-full items-center justify-between mb-10"
+      >
+        {/* Clear Cart Button */}
+        <button
+          onClick={clearCart}
+          className="w-[30%] flex items-center justify-center px-4 py-2 bg-red-500 shadow-lg text-base-content rounded-sm hover:bg-red-600 hover:scale-105 hover:shadow-xl transition-all duration-300  active:scale-95"
+          aria-label="Clear cart"
+        >
+          <Trash className="mr-2" size={20} />
+          Clear Cart
+        </button>
+
+        {/* Buy Now Button */}
+        <button
+          onClick={clearCart} 
+          className=" w-[30%] flex items-center justify-center px-4 py-2 bg-green-500 shadow-lg text-base-content rounded-sm hover:bg-green-600 hover:scale-105 hover:shadow-xl transition-all duration-300  active:scale-95"
+          aria-label="Proceed to checkout"
+        >
+          <ShoppingCartPlus className="mr-2" size={20} />
+          Buy Now
+        </button>
+      </section>
+    </main>
   );
 }

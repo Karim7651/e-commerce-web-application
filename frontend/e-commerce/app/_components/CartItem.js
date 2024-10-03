@@ -16,17 +16,17 @@ const CartItem = ({
   const handleQuantityChange = (value) => {
     setQuantity(value);
     updateCartQuantity(product.product.id, value);
-    setIsCustom(false); 
+    setIsCustom(false);
   };
 
   const handleCustomChange = (e) => {
     const value = parseInt(e.target.value);
-    
+
     if (value < 1) {
       toast.error("Quantity too small, min value: 1");
       return;
     }
-    
+
     if (value > 100) {
       toast.error("Quantity too big, max value: 100");
       return;
@@ -72,10 +72,26 @@ const CartItem = ({
             {product.product.name}
           </h2>
           <button
-            className="btn btn-error btn-md text-base-content w-25"
+            className="btn btn-error btn-md text-base-content w-25 flex items-center justify-center"
             onClick={() => removeFromCart(product.product.id)}
             aria-label={`Remove ${product.product.name} from cart`}
           >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="30"
+              height="30"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className=""
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M20 6a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-11l-5 -5a1.5 1.5 0 0 1 0 -2l5 -5z" />
+              <path d="M12 10l4 4m0 -4l-4 4" />
+            </svg>
             Remove
           </button>
         </div>
@@ -122,11 +138,19 @@ const CartItem = ({
           className="border border-neutral-300 rounded p-1 mb-2 bg-base-200"
           aria-label={`Change quantity for ${product.product.name}`}
         >
+          {/* Render options 1-10 */}
           {Array.from({ length: 10 }, (_, i) => i + 1).map((number) => (
             <option key={number} value={number}>
               {number}
             </option>
           ))}
+
+          {/* If the product's quantity exceeds 10, add it as an option */}
+          {product.quantity > 10 && (
+            <option value={product.quantity}>{product.quantity}</option>
+          )}
+
+          {/* Custom option */}
           <option value="">Custom</option>
         </select>
 
