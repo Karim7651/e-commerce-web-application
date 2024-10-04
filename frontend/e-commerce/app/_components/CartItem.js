@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import Loading from "./Loading"; // Import your loading indicator
 
 const CartItem = ({
   product,
@@ -12,11 +13,17 @@ const CartItem = ({
 }) => {
   const [quantity, setQuantity] = useState(product.quantity);
   const [isCustom, setIsCustom] = useState(false);
+  const [loading, setLoading] = useState(false); // Track loading state
 
-  const handleQuantityChange = (value) => {
-    setQuantity(value);
-    updateCartQuantity(product.product.id, value);
-    setIsCustom(false);
+  const handleQuantityChange = async (value) => {
+    setLoading(true); // Start loading
+    try {
+      setQuantity(value);
+      await updateCartQuantity(product.product.id, value);
+      setIsCustom(false);
+    } finally {
+      setLoading(false); // Stop loading
+    }
   };
 
   const handleCustomChange = (e) => {
@@ -47,14 +54,30 @@ const CartItem = ({
     }
   };
 
+  const handleRemove = async () => {
+    setLoading(true); // Start loading
+    try {
+      await removeFromCart(product.product.id);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+
   return (
     <article
-      className={`flex justify-between items-center py-6 ${
+      className={`relative flex justify-between items-center py-6 ${
         hasBorder ? "border-b border-neutral-600" : ""
       }`}
-      aria-labelledby={`cart-item-${product.productId}`}
+      aria-labelledby={`cart-item-${product.product.name}`}
     >
-      <div className="flex items-center space-x-8">
+      {/* Blur overlay and loading spinner */}
+      {loading && (
+        <div className="absolute inset-0 bg-white bg-opacity-5 backdrop-blur-sm z-10 flex items-center justify-center">
+          <Loading /> {/* Loading indicator */}
+        </div>
+      )}
+
+      <div className="flex items-center space-x-8 pl-2">
         <div className="relative lg:h-40 lg:w-40 xs:h-28 xs:w-28 flex items-center justify-center shrink-0">
           <Image
             src={product.product.imageCover}
@@ -72,32 +95,30 @@ const CartItem = ({
             {product.product.name}
           </h2>
           <button
-            className="btn btn-error btn-md text-base-content w-25 flex items-center justify-center"
-            onClick={() => removeFromCart(product.product.id)}
+            className=" font-bold  flex items-center  justify-center px-4 py-2 bg-red-500 shadow-lg text-base-content rounded-sm hover:bg-red-600 hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95"
+            onClick={handleRemove}
             aria-label={`Remove ${product.product.name} from cart`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="30"
-              height="30"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className=""
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              className="icon icon-tabler icons-tabler-outline icon-tabler-circle-minus w-6 h-6 mr-2"
             >
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M20 6a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-11l-5 -5a1.5 1.5 0 0 1 0 -2l5 -5z" />
-              <path d="M12 10l4 4m0 -4l-4 4" />
+              <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+              <path d="M9 12l6 0" />
             </svg>
             Remove
           </button>
         </div>
       </div>
 
-      <div className="flex flex-col items-end justify-center">
+      <div className="flex flex-col items-end justify-center pr-2">
         <div className="flex flex-row justify-start items-center mb-2">
           <span className="font-light text-base-content text-[0.6rem] relative top-[-4px] mr-[2px]">
             EGP
@@ -168,7 +189,7 @@ const CartItem = ({
               onBlur={handleCustomSubmit} // Submit on blur
               onKeyDown={(e) => e.key === "Enter" && handleCustomSubmit()} // Submit on Enter
               placeholder="Enter quantity"
-              className="border border-neutral-300 rounded p-1 mb-2 bg-base-200"
+              className="border border-neutral-300 rounded p-1 mb-2 bg-base-200 w-24"
               aria-label={`Custom quantity for ${product.product.name}`}
             />
           </motion.div>

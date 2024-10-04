@@ -2,7 +2,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import ShoppingCartPlus from "tabler-icons-react/dist/icons/shopping-cart-plus";
 import Stock from "./Stock";
 import PriceAndDiscount from "./PriceAndDiscount";
 import Rating from "./Rating";
@@ -13,7 +12,7 @@ function ProductCard({ product }) {
   const [isFading, setIsFading] = useState(false);
   const { _id, name, imageCover, images } = product;
   const allImages = [imageCover, ...images];
-  const { addToCart,loadingCart } = useCart();
+  const { addToCart, loadingCart } = useCart();
 
   const truncateName = (name) => {
     return name.length > 20 ? name.slice(0, 20) + "..." : name;
@@ -40,7 +39,7 @@ function ProductCard({ product }) {
   };
 
   return (
-    <div className="card bg-base-200 md:w-[15rem] shadow-lg xs:w-[20rem]">
+    <div className="card bg-base-200 md:w-[15rem] shadow-lg xs:w-[20rem]" id="card">
       <figure className="md:h-[10rem] xs:h-[15rem] relative">
         <Link href={`/products/${_id}`}>
           <Image
@@ -142,17 +141,44 @@ function ProductCard({ product }) {
         <Rating
           product={product}
           size={"1.2rem"}
-          className="justify-center items-center"
+          className="items-center justify-center text-lg "
         />
 
         <div className="card-actions justify-center">
           <button
-            className="flex w-full h-8 items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95 disabled:bg-slate-500 disabled:hover:scale-100 disabled:active:scale-100"
-            onClick={() => addToCart(product._id,product.name,product.imageCover,product.finalPrice)}
+            className=" text-white font-semibold flex w-full  items-center justify-center px-4 py-2 bg-green-500 shadow-lg  rounded-sm hover:bg-green-600 hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95 disabled:bg-slate-500 disabled:hover:scale-100 disabled:active:scale-100"
+            onClick={() =>
+              addToCart(
+                product._id,
+                product.name,
+                product.imageCover,
+                product.finalPrice
+              )
+            }
             disabled={loadingCart}
           >
-           {!loadingCart && <ShoppingCartPlus className="mr-2" size={30} />} 
-            {loadingCart ? <Loading/> : "Add to Cart"}
+            {!loadingCart && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart-plus mr-2 w-6 h-6"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M4 19a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                <path d="M12.5 17h-6.5v-14h-2" />
+                <path d="M6 5l14 1l-.86 6.017m-2.64 .983h-10.5" />
+                <path d="M16 19h6" />
+                <path d="M19 16v6" />
+              </svg>
+            )}
+            {loadingCart ? <Loading /> : "Add to Cart"}
           </button>
         </div>
       </div>

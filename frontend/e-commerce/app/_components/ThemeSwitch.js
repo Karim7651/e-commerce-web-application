@@ -2,7 +2,7 @@
 import useTheme from "../hooks/useTheme";
 
 function ThemeSwitch() {
-  const { theme, toggleTheme } = useTheme();
+  const {  toggleTheme } = useTheme();
   return (
     <label className="swap swap-rotate">
       <input

@@ -194,7 +194,7 @@ export default function Navbar() {
           >
             <div className="indicator">
               <ShoppingBag className="h-6 w-6 stroke-2" />
-              <span className="badge badge-md h-6 w-6 rounded-full bg-emerald-400 indicator-item text-black right-[-1px]">
+              <span className="badge badge-md h-6 w-6 rounded-full bg-emerald-400 font-bold indicator-item text-black right-[-2px]">
                 {user?.cart?.totalNumberOfItems || totalNumberOfItems || 0}
               </span>
             </div>

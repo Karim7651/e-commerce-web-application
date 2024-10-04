@@ -182,8 +182,8 @@ function ProductDetails({ product }) {
           <div className="flex items-center justify-start mb-4">
             <Rating
               product={product}
-              size={"1.5rem"}
-              className="justify-center items-center"
+              size={"1.4rem"}
+              className="justify-center items-center "
             />
           </div>
           {/* Quantity Selector */}
@@ -215,7 +215,7 @@ function ProductDetails({ product }) {
               onClick={() =>
                 addToCart(product._id,product.name,product.imageCover,product.finalPrice,quantity)
               }
-              className="flex items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 w-[50%] active:scale-95 disabled:bg-slate-500 disabled:hover:scale-100 disabled:active:scale-100"
+              className="font-semibold  flex items-center justify-center px-4 py-2 bg-blue-500 shadow-lg text-white rounded-sm hover:bg-blue-600 hover:scale-105 hover:shadow-xl transition-all duration-300 w-[50%] active:scale-95 disabled:bg-slate-500 disabled:hover:scale-100 disabled:active:scale-100"
               disabled={loadingCart} // Disable while loading
             >
               {!loadingCart && <ShoppingCartPlus className="mr-2" size={30} />}{" "}
@@ -226,7 +226,7 @@ function ProductDetails({ product }) {
 
             <button
               onClick={handleBuyNow}
-              className="flex items-center justify-center px-4 py-2 bg-green-500 shadow-lg text-white rounded-sm hover:bg-green-600 hover:scale-105 hover:shadow-xl transition-all duration-300 w-[50%] active:scale-95"
+              className="font-semibold flex items-center justify-center px-4 py-2 bg-green-500 shadow-lg text-white rounded-sm hover:bg-green-600 hover:scale-105 hover:shadow-xl transition-all duration-300 w-[50%] active:scale-95"
             >
               <Truck className="mr-2" size={30} />
               Buy Now
