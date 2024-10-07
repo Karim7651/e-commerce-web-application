@@ -46,6 +46,7 @@ export default function SearchBar() {
       e.preventDefault(); 
       const endPoint = 
       router.push(`/search?search=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery("");
     }
   };
   return (

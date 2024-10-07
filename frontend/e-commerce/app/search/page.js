@@ -8,7 +8,7 @@ const SearchPage = async ({ searchParams }) => {
 
   return (
     <>
-      <SearchFilter />
+      <SearchFilter searchParams={searchParams} />
       <div className="relative w-[90%] mx-auto my-20">
         {/* Header */}
         <div className="flex justify-between items-center bg-base-200 text-base-content p-4 rounded-t-lg">
